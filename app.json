@@ -1,11 +1,13 @@
 {
   "pages": [
+    "page/pandect/pandect",
+    "page/daily/daily",
     "page/index/index"
   ],
   "window": {
     "enableWK": "YES",
     "enableDSL": true,
-    "defaultTitle": "企业内部E应用1.1",
+    "defaultTitle": "智慧运营",
     "backgroundColor": "#F5F5F9",
     "pullRefresh": false,
     "allowsBounceVertical": true
@@ -15,7 +17,18 @@
     "selectedColor": "#108ee9",
     "backgroundColor": "#F5F5F9",
     "items": [
-      
+      {
+        "pagePath": "page/pandect/pandect",
+        "name": "总览",
+        "icon": "images/all_default.png",
+        "activeIcon": "images/all_active.png"
+      },
+      {
+        "pagePath": "page/daily/daily",
+        "name": "经营日报",
+        "icon": "images/day_default.png",
+        "activeIcon": "images/day_active.png"
+      }
     ]
   },
   "debug": true
