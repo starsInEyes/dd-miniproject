@@ -1,10 +1,12 @@
+import { testApi, getMonthApi } from '../../request/api'
+
 let app = getApp();
 
 
 //内网穿透工具介绍:
 // https://open-doc.dingtalk.com/microapp/debug/ucof2g
 //替换成开发者后台设置的安全域名
-let domain = "http://10.10.150.148:8080";
+let domain = "http://10.10.150.148:8022";
 let url = domain + '/login';
 
 Page({
@@ -22,7 +24,7 @@ Page({
                 this.setData({
                     authCode:res.authCode
                 })
-                //dd.alert({content: "step1"});
+                // dd.alert({content: "step1"});
                 dd.httpRequest({
                     url: url,
                     method: 'POST',
@@ -61,16 +63,11 @@ Page({
 
     },
     onLoad(){
-
         let _this = this;
 
         this.setData({
             corpId: app.globalData.corpId
         })
-        
-        //dd.alert({content: "step1"});
-         
-        
-        
+
     }
 })

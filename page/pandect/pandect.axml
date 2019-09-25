@@ -16,6 +16,77 @@
   </view>
   <!-- 营收日报 -->
   <view class="container">
-    <ec-canvas id="mychart-dom-bar" canvas-id="mychart-bar" ec="{{ ec }}"></ec-canvas>
+    <view class="canvas-title">营收日报</view>
+    <canvas
+      id="area"
+      onTouchStart="touchStart"
+      onTouchMove="touchMove"
+      onTouchEnd="touchEnd"
+      width="{{width}}" height="{{height}}"
+    />
+  </view>
+  <!-- 日新增收入 -->
+  <view class="container">
+    <view class="canvas-title">日新增收入</view>
+    <canvas
+      id="line"
+      onTouchStart="touchStart2"
+      onTouchMove="touchMove2"
+      onTouchEnd="touchEnd2"
+      width="{{width2}}" height="{{height2}}"
+    />
+  </view>
+  <!-- 应收，已收，代收 -->
+  <view class="all-year">
+    <view>
+      3.22
+      <text>全年应收</text>
+    </view>
+    <view>
+      3.22
+      <text>全年已收</text>
+    </view>
+    <view>
+      3.22
+      <text>全年待收</text>
+    </view>
+  </view>
+  <!-- 收缴排行 -->
+  <view>
+    <text class="canvas-title">收缴排行</text>
+    <view class="table">
+      <view class="thead">
+        <view class="tr">
+          <view class="th ft-col">项目</view>
+          <view class="th">目标</view>
+          <view class="th">收缴率</view>
+          <view class="th">差额</view>
+          <view class="th">去年同期</view>
+        </view>
+      </view>
+      <view class="tbody">
+        <view class="tr">
+          <view class="td ft-col">墨水湾</view>
+          <view class="td">78%</view>
+          <view class="td">75%</view>
+          <view class="td warn">-3%</view>
+          <view class="td">80%</view>
+        </view>
+        <view class="tr">
+          <view class="td ft-col">水岸国际</view>
+          <view class="td">58%</view>
+          <view class="td">57%</view>
+          <view class="td warn">-1%</view>
+          <view class="td warn">60%</view>
+        </view>
+        <view class="tr">
+          <view class="td ft-col">红桥城</view>
+          <view class="td">61%</view>
+          <view class="td">62%</view>
+          <view class="td">1%</view>
+          <view class="td warn">70%</view>
+        </view>
+      </view>
+    </view>
   </view>
 </view>

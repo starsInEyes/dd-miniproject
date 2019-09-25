@@ -1,7 +1,7 @@
 {
   "pages": [
-    "page/pandect/pandect",
     "page/daily/daily",
+    "page/pandect/pandect",
     "page/index/index"
   ],
   "window": {
