@@ -7,5 +7,5 @@
         <view class="row">userId:{{userId}}</view>
         <view class="row">name:{{userName}}</view>
     </view>
-    
+
 </view>

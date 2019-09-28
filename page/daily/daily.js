@@ -1,11 +1,13 @@
 import F2 from '@antv/my-f2';
 import { getMonthApi, getShouldApi, getList, getParkingToday, getParkingProgress } from '../../request/api'
 import { dateFormatter, getSort } from '../../utils/util'
-const app = getApp();
 
+const app = getApp();
 let chart = null;
 let flag = true;
 let flag2 = true;
+let yesterday = dateFormatter('yyyy-MM-dd', new Date(new Date().getTime()-86400000));
+
 let exampleData = [
   {name: '全年已收', month: '1', value: 0},
   {name: '全年已收', month: '2', value: 0},
@@ -127,76 +129,148 @@ function drawChart2(canvas, width, height, data, total) {
 
 Page({
   data: {
-    currentTab: true,
+    currentTab: 1,
     sortVal: true,
+    yesterday: yesterday,
+    selectedDate: yesterday,
   },
   onReady() {
     this.drawChartMethod(exampleData);
-    this.setData({
-      today: dateFormatter('yyyy.MM.dd', new Date(new Date().getTime()-86400000))
-    });
   },
   onLoad(){
-    dd.showLoading();
-    getMonthApi({year: '2019'}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
-        let months = ['1','2','3','4','5','6','7','8','9','10','11','12']
-        let cmLength = new Date().getMonth() + 1;
-        months = months.splice(0, cmLength);
-        // console.log(months);
-        let data = [];
-        for (let i = 0; i<months.length; i++){
-          data[i] = {};
-          data[i].name = '全年已收';
-          data[i].month = months[i];
-          data[i].value = ((temp['collectedMonth0'+(i+1)] || 0)/10000).toFixed(1)-0;
-          // 
-          data[i+months.length] = {};
-          data[i+months.length].name = '全年待收';
-          data[i+months.length].month = months[i];
-          data[i+months.length].value = ((temp['dueIn0'+(i+1)] || 0)/10000).toFixed(1)-0;
-        }
-        // console.log(data);  
-        this.setData({
-          data1: data
-        })
-        this.drawChartMethod(data);
-      }
-    }).catch(err=>{
-      console.log(err)
-    }).finally(()=>{ dd.hideLoading() })
-    getShouldApi({year: '2019'}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
-        console.log(temp)
-        this.setData({
-          collectedYear: (temp.collectedYear/10000).toFixed(1),// 全年已收
-          shouldYear: (temp.shouldYear/10000).toFixed(1),      // 全年应收
-          tmy:{
-            t: (temp.collectedToday/10000).toFixed(1), // 今日已收
-            m: (temp.collectedMonth/10000).toFixed(1), // 本月已收
-            y: (temp.collectedYear/10000).toFixed(1)   // 全年已收
-          }
-        })
-      }
-    }).catch(err=>{
-      console.log(err)
-    })
-    getList({year: '2019'}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
-        console.log(temp);
-        this.setData({
-          list: temp
-        })
-      }
-    }).catch(err=>{
-      console.log(err)
-    })
+    this.getPropertyData(this.data.selectedDate, true);
   },
   tapMenus(){
     // 点击菜单按钮
+  },
+  onSelected(date){
+    switch(this.data.currentTab){
+      case 1: this.getPropertyData(date);break;
+      case 2: this.getParkingData(date);break;
+    }
+    this.setData({selectedDate: date})
+  },
+  getPropertyData(d, init){
+    dd.showLoading();
+    this.setData({currentData1Date: d});
+
+    let isComplete = [];
+    let checkComplete = arr=>{
+      for (let i = 0; i<arr.length; i++){ if (arr[i] == 'getting') return; }
+      dd.hideLoading();
+    }
+    // 层叠柱形图
+    if (init || d.split('-')[0] != this.data.selectedDate.split('-')[0]){
+      // 只有载入，或者年份发生变更时，才更新层叠柱形图
+      isComplete[0] = 'getting';
+      getMonthApi({year: d.split('-')[0]}).then(response=>{
+        if (response && response.data && response.data.code == '0'){
+          let temp = response.data.result;
+          let months = ['1','2','3','4','5','6','7','8','9','10','11','12']
+          let cmLength = new Date().getMonth() + 1;
+          months = months.splice(0, cmLength);
+          let data = [];
+          for (let i = 0; i<months.length; i++){
+            data[i] = {};
+            data[i].name = '全年已收';
+            data[i].month = months[i];
+            data[i].value = ((temp['collectedMonth0'+(i+1)] || 0)/10000).toFixed(1)-0;
+            // ---
+            data[i+months.length] = {};
+            data[i+months.length].name = '全年待收';
+            data[i+months.length].month = months[i];
+            data[i+months.length].value = ((temp['dueIn0'+(i+1)] || 0)/10000).toFixed(1)-0;
+          }
+          this.setData({data1: data});
+          this.drawChartMethod(data);
+        }
+        isComplete[0] = 'ok'; checkComplete(isComplete);
+      }).catch(err=>{ console.log(err) })
+    } else{
+      this.drawChartMethod(this.data.data1);
+    }
+    // 物业费收缴情况
+    isComplete[1] = 'getting';
+    getShouldApi({year: d}).then(response=>{
+      if (response && response.data && response.data.code == '0'){
+        let temp = response.data.result;
+        this.setData({
+          collectedYear: (temp.collectedYear/10000).toFixed(1),// 全年已收
+          shouldYear: (temp.shouldYear/10000).toFixed(1),      // 全年应收
+          dueIn: (temp.dueIn/10000).toFixed(1), // 全年待收
+          tmy:{
+            t: (temp.collectedToday/10000).toFixed(1), // 今日已收
+            m: (temp.collectedMonth/10000).toFixed(1), // 本月已收
+            y: (temp.collectedYear/10000).toFixed(1),  // 全年已收
+          }
+        })
+      }
+      isComplete[1] = 'ok'; checkComplete(isComplete);
+    }).catch(err=>{ console.log(err) });
+
+    // 项目收缴情况列表
+    isComplete[2] = 'getting';
+    getList({year: d}).then(response=>{
+      if (response && response.data && response.data.code == '0'){
+        let temp = response.data.result;
+        this.setData({list: temp});
+      }
+      isComplete[2] = 'ok'; checkComplete(isComplete);
+    }).catch(err=>{ console.log(err) });
+  },
+  getParkingData(d){
+    dd.showLoading();
+    this.setData({currentData2Date: d});
+
+    let isComplete = [];
+    let checkComplete = arr=>{
+      for (let i = 0; i<arr.length; i++){ if (arr[i] == 'getting') return; }
+      dd.hideLoading();
+    }
+    // 图表
+    isComplete[0] = 'getting';
+    getParkingToday({year: d}).then(response=>{
+      if (response && response.data && response.data.code == '0'){
+        let temp = response.data.result;
+        let data = [
+          {name:'固定车位 ' + temp.fixed + ' 元', proportion: temp.fixed, a: '1'},
+          {name:'租赁车位 ' + temp.rent + ' 元', proportion: temp.rent, a: '1'},
+          {name:'临时车位 ' + temp.temporary + ' 元', proportion: temp.temporary, a: '1'},
+        ];
+        this.setData({
+          data2: data,
+          parkingToday:{
+            totalMoneyIn: temp.totalMoneyIn,
+            regionNum: temp.regionNum,
+            percent: temp.percent*100 + '%',
+            noteGetScore: temp.noteGetScore
+          }
+        }, ()=>{
+          this.drawChartMethod2(this.data.data2, temp.totalMoneyIn);
+        })
+      }
+      isComplete[0] = 'ok'; checkComplete(isComplete);
+    }).catch(err=>{ console.log(err) });
+    // 列表
+    isComplete[1] = 'getting';
+    getParkingProgress({year: d}).then(response=>{
+      if (response && response.data && response.data.code == '0'){
+        let temp = response.data.result;
+        for (let i = 0; i<temp.length; i++){
+          if ((temp[i].collectedYear + temp[i].lessNum)==0){
+            temp[i].progress = 0;
+          } else {
+            temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear+temp[i].lessNum))*100
+          }
+
+          // 临时
+          temp[i].lessNum = ((0-temp[i].lessNum)/1000).toFixed(1);
+          temp[i].progress = Math.random()*20+60;
+        }
+        this.setData({ list2: temp })
+      }
+      isComplete[1] = 'ok'; checkComplete(isComplete);
+    }).catch(err=>{ console.log(err) });
   },
   touchStart(e) {
     if (this.canvas) {
@@ -229,6 +303,7 @@ Page({
     }
   },
   sort(event){
+    // 根据某个字段对列表排序
     let field = event.target.dataset.field;
     let temp = this.data.list;
     let arr = [];
@@ -260,74 +335,27 @@ Page({
       list: result
     })
   },
-  tabSwitch1(e){
-    this.setData({
-      currentTab: true
-    })
+  tabSwitch1(){
+    // 切换到物业费
+    this.setData({currentTab: 1});
     flag = true;
-    this.drawChartMethod(this.data.data1);
+    if (this.data.data1 && (this.data.currentData1Date == this.data.selectedDate)){
+      this.drawChartMethod(this.data.data1);
+    } else {
+      this.getPropertyData(this.data.selectedDate);
+    }
   },
-  tabSwitch2(e){
-    this.setData({
-      currentTab: false
-    })
-    // 停车费日报
+  tabSwitch2(){
+    // 切换到停车费
+    this.setData({currentTab: 2});
     flag2 = true;
-    if (this.data.data2 && this.data.parkingToday){
+    if (this.data.data2 && (this.data.currentData2Date == this.data.selectedDate)){
       this.drawChartMethod2(this.data.data2, this.data.parkingToday.totalMoneyIn);
     } else {
       this.drawChartMethod2(exampleData2);
-      dd.showLoading();
-      getParkingToday({year: '2019'}).then(response=>{
-        if (response && response.data && response.data.code == '0'){
-          let temp = response.data.result;
-          this.setData({
-            data2: [
-                {name:'固定车位 ' + temp.fixed + ' 元', proportion: temp.fixed, a: '1'},
-                {name:'租赁车位 ' + temp.rent + ' 元', proportion: temp.rent, a: '1'},
-                {name:'临时车位 ' + temp.temporary + ' 元', proportion: temp.temporary, a: '1'},
-            ],
-            parkingToday:{
-              totalMoneyIn: temp.totalMoneyIn,
-              regionNum: temp.regionNum,
-              percent: temp.percent*100 + '%',
-              noteGetScore: temp.noteGetScore
-            }
-          }, ()=>{
-            this.drawChartMethod2(this.data.data2, temp.totalMoneyIn);
-          })
-        }
-      }).catch(err=>{
-        console.log(err)
-      }).finally(()=>{ dd.hideLoading() })
+      this.getParkingData(this.data.selectedDate);
     }
-    // 停车费-车位收缴情况
-    if (this.data.list2){
-      // nothing
-    } else {
-      getParkingProgress({year: '2019'}).then(response=>{
-        if (response && response.data && response.data.code == '0'){
-          let temp = response.data.result;
-          for (let i = 0; i<temp.length; i++){
-            if ((temp[i].collectedYear + temp[i].lessNum)==0){
-              temp[i].progress = 0;
-            } else {
-              temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear+temp[i].lessNum))*100
-            }
-
-            // 临时
-            temp[i].lessNum = ((0-temp[i].lessNum)/1000).toFixed(1);
-            temp[i].progress = Math.random()*20+60;
-          }
-          this.setData({ list2: temp })
-        }
-      }).catch(err=>{
-        console.log(err)
-      })
-    }
-
   },
-
   drawChartMethod(data){
     dd.createSelectorQuery()
       .select('#area')
@@ -355,7 +383,7 @@ Page({
     });
   },
   drawChartMethod2(data, total){
-    my.createSelectorQuery()
+    dd.createSelectorQuery()
     .select('#line')
     .boundingClientRect()
     .exec(res => {

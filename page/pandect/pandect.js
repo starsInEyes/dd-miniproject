@@ -159,7 +159,7 @@ Page({
         const canvasWidth = res[0].width;
         const canvasHeight = res[0].height;
         // 高清解决方案
-        console.log(res, pixelRatio)
+        // console.log(res, pixelRatio)
         this.setData({
           width: canvasWidth * pixelRatio,
           height: canvasHeight * pixelRatio
@@ -182,7 +182,7 @@ Page({
         const canvasWidth = res[0].width;
         const canvasHeight = res[0].height;
         // 高清解决方案
-        console.log(res, pixelRatio)
+        // console.log(res, pixelRatio)
         this.setData({
           width2: canvasWidth * pixelRatio,
           height2: canvasHeight * pixelRatio

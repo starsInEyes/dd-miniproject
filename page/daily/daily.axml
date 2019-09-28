@@ -1,22 +1,27 @@
 <view class="page">
-  <view class="header">经营日报</view>
+  <view class="header">
+    <text>经营日报</text>
+    <view class="h-date">
+      <the-date defaultDate="{{yesterday}}" onSelected="onSelected" />
+      <view class="icon-down"></view>
+    </view>
+  </view>
   <!-- tab -->
   <view class="tab">
     <view class="ul">
-      <view class="li {{currentTab?'active':''}}" onTap="tabSwitch1">物业费</view>
-      <view class="li {{currentTab?'':'active'}}" onTap="tabSwitch2">停车费</view>
+      <view class="li {{currentTab==1?'active':''}}" onTap="tabSwitch1">物业费</view>
+      <view class="li {{currentTab==2?'active':''}}" onTap="tabSwitch2">停车费</view>
     </view>
     <view class="menu" onTap="tapMenus">
       <image mode="menus" src="../../images/menus.svg"/>
     </view>
   </view>
-  <view a:if="{{currentTab}}">
+  <view a:if="{{currentTab==1}}">
     <!-- 收缴金额 -->
     <view class="container">
       <view class="canvas-title">
         <text class="canvas-title-amount">收缴金额</text>
         <view class="today">
-          <view class="t-date">{{today}}</view>
           <view class="t-data">
             <view class="t-data-line">
               <view class="t-legend"></view>
@@ -24,7 +29,7 @@
             </view>
             <view class="t-data-line">
               <view class="t-legend"></view>
-              <text>全年待收 {{(shouldYear-tmy.y)||''}} 万</text>
+              <text>全年待收 {{dueIn}} 万</text>
             </view>
           </view>
         </view>
@@ -75,7 +80,7 @@
         </view>
       </view>
       <view class="tbody">
-        <view class="tr" a:for="{{list}}">
+        <view class="tr {{item.lessNum>0?'':'warn'}}" a:for="{{list}}">
           <view class="td ft-col">{{item.name}}</view>
           <view class="td">{{item.taxNum + '%'}}</view>
           <view class="td">{{(item.collectedMonth/10000).toFixed(1)-0}} 万</view>
@@ -85,7 +90,7 @@
       </view>
     </view>
   </view>
-  <view a:if="{{!currentTab}}">
+  <view a:if="{{currentTab==2}}">
     <!-- 停车营收日报 -->
     <view class="canvas-title">停车营收日报</view>
     <view class="canvas-box">

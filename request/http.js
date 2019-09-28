@@ -1,7 +1,8 @@
 let domain;
 switch(process.env.NODE_ENV){
-  case 'development': domain = 'http://10.10.150.148:8022';break;
-  case 'production': domain = 'http://fxhy.vaiwan.com';break;
+  // case 'development': domain = 'http://10.10.150.148:8022';break;
+  case 'development': domain = 'http://121.40.155.130/dingtalk';break;
+  case 'production': domain = 'http://121.40.155.130/dingtalk';break;
 }
 
 

@@ -1,0 +1,18 @@
+<view onTap="openPanel" class="date">{{date}}</view>
+<view class="panel {{isActive?'active':''}}">
+  <view class="controls">
+    <view onTap="cancel">取消</view>
+    <view onTap="ok">确定</view>
+  </view>
+  <picker-view onChange="dateChange" value="{{resultIndex}}">
+    <picker-view-column>
+      <view a:for="{{options.year}}">{{item}}年</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view a:for="{{options.month}}">{{item}}月</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view a:for="{{options.day}}">{{item}}日</view>
+    </picker-view-column>
+  </picker-view>
+</view>
