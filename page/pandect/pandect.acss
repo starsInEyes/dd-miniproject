@@ -1,34 +1,125 @@
 .header{
-  font-size: 20px;
-  font-weight: bold;
-}
-.con-top{
   display: flex;
-  padding: 0 20px;
   justify-content: space-between;
-  border-bottom: 1px solid #eee;
+  border-bottom: 3px solid #eee;
   padding-bottom: 10px;
 }
-.con-top view{
-  text-align: center;
-}
-.con-top view view{
-  color: #999;
-}
-.con-top view view + view{
-  color: #000;
+.header text{
   font-size: 20px;
   font-weight: bold;
 }
-.con-top > view{
-  padding-top: 10px;
+.header .h-date{
+  font-size: 14px;
+  line-height: 22px;
+  position: relative;
 }
-.con-top > .con-top-center{
-  padding-top: 0;
+.header .h-date .date{
+  padding: 0 25px;
+  position: relative;
+  z-index: 2;
 }
-.con-top > .con-top-center view + view{
-  padding-top: 10px;
+.header .h-date .icon-down{
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top-width: 7px;
+  border-top-color: #000;
+  margin-top: 8px;
+  margin-left: 3px;
+  position: absolute;
+  top: 0;
+  right: 13px;
 }
+
+.con-top{
+  padding: 15px 0;
+}
+.con-top .ct-all{
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+.con-top .ct-all > view view{
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+.con-top .ct-all > view view text{
+  font-size: 12px;
+}
+.con-top .ct-all > view view + view{
+  font-size: 12px;
+  font-weight: normal;
+  padding: 5px 0;
+}
+.con-top .ct-all .interval-line{
+  width: 1px;
+  height: 36px;
+  background-color: #eee;
+}
+.con-top .ct-detail{
+  display: block;
+}
+.con-top .ct-detail .ct-control{
+  text-align: center;
+  color: #2962FB;
+  font-weight: bold;
+  padding: 5px 0;
+}
+.con-top .ct-detail .ct-control text{
+  vertical-align: middle;
+}
+.con-top .ct-detail .ct-control image{
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  vertical-align: middle;
+  transform: rotate(180deg);
+}
+.con-top .ct-detail.active .ct-control image{
+  transform: rotate(0);
+}
+.con-top .ct-detail .ct-details{
+  background-color: #eee;
+  padding: 0 10px;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.38s;
+  box-sizing: border-box;
+}
+.con-top .ct-detail.active .ct-details{
+  height: 127px;
+}
+.con-top .ct-detail .ct-details .table{
+  margin: 0;
+}
+.con-top .ct-detail .ct-details .table .th,
+.con-top .ct-detail .ct-details .table .td{
+  width: 26.66%;
+  text-align: center;
+}
+.con-top .ct-detail .ct-details .table .td{
+  color: #333;
+  font-weight: bold;
+}
+.con-top .ct-detail .ct-details .table .ft-col{
+  width: 20%;
+  color: #999;
+  text-align: left;
+  font-weight: normal;
+}
+
+/* swiper */
+.swiper{
+  
+}
+.swiper .swiper-item{
+  
+}
+
+
+
+
 
 canvas{
   margin-left: 20px;

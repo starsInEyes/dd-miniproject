@@ -1,57 +1,122 @@
 <view class="page">
-  <view class="header">总览</view>
-  <view class="con-top">
-    <view>
-      <view>项目总数</view>
-      <view>16</view>
-    </view>
-    <view class="con-top-center">
-      <view>项目达标率</view>
-      <view>80%</view>
-    </view>
-    <view>
-      <view>未达标项目数</view>
-      <view>6</view>
+  <!-- 总览 -->
+  <view class="header">
+    <text>总览</text>
+    <view class="h-date">
+      <the-date defaultDate="{{today}}" onSelected="onSelected" />
+      <view class="icon-down"></view>
     </view>
   </view>
-  <!-- 营收日报 -->
+
+  <!-- 全年情况 -->
+  <view class="con-top">
+    <view class="ct-all">
+      <view>
+        <view>3.22<text>亿</text></view>
+        <view>全年目标</view>
+      </view>
+      <view class="interval-line"></view>
+      <view class="con-top-center">
+        <view>3.22<text>亿</text></view>
+        <view>全年已收</view>
+      </view>
+      <view class="interval-line"></view>
+      <view>
+        <view>3.22<text>亿</text></view>
+        <view>全年待收</view>
+      </view>
+    </view>
+    <view class="ct-detail {{isUpDetails?'active':''}}">
+      <view class="ct-control" onTap="switchDetails">
+        <text>详情</text>
+        <image src="../../images/upup.svg"/>
+      </view>
+      <view class="ct-details">
+        <view class="table" style="margin-top:5px">
+          <view class="thead">
+            <view class="tr">
+              <view class="th ft-col"></view>
+              <view class="th">全年应收</view>
+              <view class="th">全年已收</view>
+              <view class="th">全年待收</view>
+            </view>
+          </view>
+          <view class="tbody">
+            <view class="tr">
+              <view class="td ft-col">物业费</view>
+              <view class="td">34,888.0万</view>
+              <view class="td">34,888.0万</view>
+              <view class="td">34,888.0万</view>
+            </view>
+          </view>
+        </view>
+        <view class="table">
+          <view class="thead">
+            <view class="tr">
+              <view class="th ft-col"></view>
+              <view class="th">全年目标</view>
+              <view class="th">全年已收</view>
+              <view class="th">目标差额</view>
+            </view>
+          </view>
+          <view class="tbody">
+            <view class="tr">
+              <view class="td ft-col">车位费</view>
+              <view class="td">435.0万</view>
+              <view class="td">435.0万</view>
+              <view class="td">435.0万</view>
+            </view>
+            <view class="tr">
+              <view class="td ft-col">特约服务费</view>
+              <view class="td">435.0万</view>
+              <view class="td">435.0万</view>
+              <view class="td">435.0万</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 环形图——营收日报 -->
   <view class="container">
-    <view class="canvas-title">营收日报</view>
+    <swiper
+      class="swiper"
+      indicator-dots="{{true}}"
+      indicator-color="#ddd"
+      duration="{{500}}"
+      autoplay="{{false}}"
+      interval="{{false}}">
+      <block a:for="{{swiper}}">
+        <swiper-item>
+          <view class="swiper-item" item-id="{{item.el}}">
+            <view>
+              <view class="canvas-title">营收数据 —— {{item.title}}</view>
+              <canvas
+                id="{{item.el}}"
+                onTouchStart="circle_touchStart"
+                onTouchMove="circle_touchMove"
+                onTouchEnd="circle_touchEnd"
+                width="{{width}}" height="{{height}}"/>
+            </view>
+          </view>
+        </swiper-item>
+      </block>
+    </swiper>
+  </view>
+
+  <!-- 折线图——日新增收入 -->
+  <view class="container">
+    <view class="canvas-title" onTap="titleClick">日新增收入</view>
     <canvas
-      id="area"
+      id="line1"
       onTouchStart="touchStart"
       onTouchMove="touchMove"
       onTouchEnd="touchEnd"
-      width="{{width}}" height="{{height}}"
-    />
+      width="{{width}}" height="{{height}}"/>
   </view>
-  <!-- 日新增收入 -->
-  <view class="container">
-    <view class="canvas-title">日新增收入</view>
-    <canvas
-      id="line"
-      onTouchStart="touchStart2"
-      onTouchMove="touchMove2"
-      onTouchEnd="touchEnd2"
-      width="{{width2}}" height="{{height2}}"
-    />
-  </view>
-  <!-- 应收，已收，代收 -->
-  <view class="all-year">
-    <view>
-      3.22
-      <text>全年应收</text>
-    </view>
-    <view>
-      3.22
-      <text>全年已收</text>
-    </view>
-    <view>
-      3.22
-      <text>全年待收</text>
-    </view>
-  </view>
-  <!-- 收缴排行 -->
+
+  <!-- 列表——收缴排行 -->
   <view>
     <text class="canvas-title">收缴排行</text>
     <view class="table">

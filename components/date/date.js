@@ -36,6 +36,7 @@ Component({
   },
   methods:{
     openPanel(){
+      return;
       this.setData({isActive:true});
       this.monthToDay(
         this.data.options.year[this.data.resultIndex[0]],
@@ -91,8 +92,8 @@ Component({
       temp.month = mArr;
 
       if (year == cd.getFullYear() && month == (cd.getMonth()+1)){
-        // 如果是当年当月，则天数不能超过昨天
-        maxDay = cd.getDate() - 1;
+        // 如果是当年当月，则天数不能超过今天
+        maxDay = cd.getDate();
       } else {
         // 否则，取选定月的天数
         sd.setMonth(sd.getMonth() + 1);

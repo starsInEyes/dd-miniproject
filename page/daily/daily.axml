@@ -1,12 +1,15 @@
 <view class="page">
+
+  <!-- 标题 -->
   <view class="header">
     <text>经营日报</text>
     <view class="h-date">
-      <the-date defaultDate="{{yesterday}}" onSelected="onSelected" />
-      <view class="icon-down"></view>
+      <the-date defaultDate="{{today}}" onSelected="onSelected" />
+      <!-- <view class="icon-down"></view> -->
     </view>
   </view>
-  <!-- tab -->
+
+  <!-- tab切换栏 -->
   <view class="tab">
     <view class="ul">
       <view class="li {{currentTab==1?'active':''}}" onTap="tabSwitch1">物业费</view>
@@ -16,7 +19,10 @@
       <image mode="menus" src="../../images/menus.svg"/>
     </view>
   </view>
+
+  <!-- 物业费 -->
   <view a:if="{{currentTab==1}}">
+
     <!-- 收缴金额 -->
     <view class="container">
       <view class="canvas-title">
@@ -45,6 +51,7 @@
       />
       </view>
     </view>
+
     <!-- 今日、本月、全年已收情况 -->
     <view class="situation">
       <view class="item">
@@ -68,40 +75,46 @@
         <view class="i-bottom">全年已收</view>
       </view>
     </view>
+
     <!-- 表格 -->
     <view class="table">
       <view class="thead">
         <view class="tr">
-          <view class="th ft-col">项目</view>
+          <view class="th ft-col">项目名称</view>
           <view class="th" onTap="sort" data-field="taxNum">目标<image src="../../images/sort.svg"/></view>
           <view class="th" onTap="sort" data-field="collectedMonth">当月已收<image src="../../images/sort.svg"/></view>
           <view class="th" onTap="sort" data-field="lessNum">差额<image src="../../images/sort.svg"/></view>
-          <!-- <view class="th" onTap="sort" data-field="lessNumLastYear">同期差额<image src="../../images/sort.svg"/></view> -->
+          <view class="th" onTap="sort" data-field="difference">差额%<image src="../../images/sort.svg"/></view>
         </view>
       </view>
       <view class="tbody">
-        <view class="tr {{item.lessNum>0?'':'warn'}}" a:for="{{list}}">
+        <view class="tr ft-row" a:if="{{list.sum}}">
+          <view class="td ft-col">{{list.sum.name}}</view>
+          <view class="td">{{list.sum.taxNum + '%'}}</view>
+          <view class="td">{{(list.sum.collectedMonth/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{(list.sum.lessNum/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{list.sum.difference}}%</view>
+        </view>
+        <view class="tr {{item.lessNum>=0?'':'warn'}}" a:for="{{list}}">
           <view class="td ft-col">{{item.name}}</view>
           <view class="td">{{item.taxNum + '%'}}</view>
           <view class="td">{{(item.collectedMonth/10000).toFixed(1)-0}} 万</view>
           <view class="td">{{(item.lessNum/10000).toFixed(1)-0}} 万</view>
-          <!-- <view class="td">{{(item.lessNumLastYear/1000).toFixed(1)-0}}K</view> -->
+          <view class="td">{{item.difference}}%</view>
         </view>
       </view>
     </view>
+    
   </view>
+
+  <!-- 停车费 -->
   <view a:if="{{currentTab==2}}">
     <!-- 停车营收日报 -->
     <view class="canvas-title">停车营收日报</view>
     <view class="canvas-box">
-      <canvas
-      id="line"
-      onTouchStart="touchStart2"
-      onTouchMove="touchMove2"
-      onTouchEnd="touchEnd2"
-      width="{{width2}}" height="{{height2}}"
-    />
+      <canvas id="circle" width="{{width2}}" height="{{height2}}"/>
     </view>
+
     <!-- 车位收缴情况 -->
     <view class="canvas-title parkingfee">车位收缴情况
       <text>综合</text>
@@ -120,6 +133,7 @@
         <view>{{parkingToday.noteGetScore}}</view>
       </view>
     </view>
+
     <!-- 项目收缴进度 -->
     <view class="canvas-title">项目收缴进度</view>
     <view class="progress">
@@ -127,10 +141,23 @@
       <view class="p-item" a:for="{{list2}}">
         <text>
           <text>{{item.name}}</text>
-          <text>￥{{item.lessNum}}</text>
+          <text>￥{{item.lessNum}}万</text>
         </text>
         <progress percent="{{item.progress}}" stroke-width="8"/>
       </view>
+    </view>
+
+    <!-- 临停营收日报 -->
+    <view class="canvas-title">临停营收日报</view>
+    <view class="canvas-box">
+      <canvas
+        id="line"
+        onTouchStart="touchStart3"
+        onTouchMove="touchMove3"
+        onTouchEnd="touchEnd3"
+        width="{{width3}}"
+        height="{{height3}}">
+      </canvas>  
     </view>
 
   </view>

@@ -9,3 +9,4 @@ export const getList = p => ddget('/cfin/getCfinList', p);
 // 停车费
 export const getParkingToday = p => ddget('/cfin/getCarFees', p);
 export const getParkingProgress = p => ddget('/cfin/getCarFeeList', p);
+export const getParkingLine = p => ddget('/cfin/getCarCollectedtoday', p);

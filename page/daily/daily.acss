@@ -155,6 +155,24 @@ canvas{
   justify-content: flex-start;
   padding: 5px 0;
 }
+.table .tr.ft-row{
+  position: relative;
+  padding-bottom: 10px;
+}
+.table .tr.ft-row::after{
+  content: '';
+  width: 100%;
+  height: 0px;
+  border-bottom: 1px dashed #ccc;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 97%;
+}
+.table .tr.ft-row .td{
+  color: #000;
+  font-weight: bold;
+}
 .table .tr.warn .td{
   color: red;
 }
@@ -163,9 +181,10 @@ canvas{
   text-align: center;
 }
 .table .th{
-  color: #999;
+  color: #000;
   display: flex;
   justify-content: center;
+  font-weight: bold;
 }
 .table .th image{
   width: 10px;
@@ -178,6 +197,7 @@ canvas{
 .table .ft-col{
   text-align: left;
   justify-content: flex-start;
+  width: 30%;
 }
 
 .canvas-title.parkingfee{

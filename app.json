@@ -18,12 +18,6 @@
     "backgroundColor": "#F5F5F9",
     "items": [
       {
-        "pagePath": "page/pandect/pandect",
-        "name": "总览",
-        "icon": "images/all_default.png",
-        "activeIcon": "images/all_active.png"
-      },
-      {
         "pagePath": "page/daily/daily",
         "name": "经营日报",
         "icon": "images/day_default.png",

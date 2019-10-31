@@ -1,11 +1,11 @@
 import F2 from '@antv/my-f2';
+import { dateFormatter } from '../../utils/util'
+
 const app = getApp();
+const today = dateFormatter('yyyy-MM-dd', new Date());
 
-let chart = null;
-
-function drawChart(canvas, width, height) {
-
-  chart = new F2.Chart({
+function drawChart(canvas, width, height, data) {
+  let chart = new F2.Chart({
     el: canvas,
     width,
     height
@@ -29,7 +29,7 @@ function drawChart(canvas, width, height) {
   chart.axis(false);
   chart.guide().text({
     position: ['50%', '50%'],
-    content: '总营收\n433000'
+    content: '总营收\n433000元'
   })
   chart.interval()
   .position('a*proportion')
@@ -42,11 +42,9 @@ function drawChart(canvas, width, height) {
   chart.render();
   return chart;
 }
+function drawChart2(canvas, width, height, data) {
 
-
-function drawChart2(canvas, width, height) {
-
-  chart = new F2.Chart({
+  let chart = new F2.Chart({
     el: canvas,
     width,
     height
@@ -145,86 +143,74 @@ function drawChart2(canvas, width, height) {
 
 Page({
   data: {
+    today: today,
+    isUpDetails: false,
 
+    swiper: [
+      {el: 'area1', title: '当日', ind: 1},
+      {el: 'area2', title: '当月', ind: 2},
+      {el: 'area3', title: '当年', ind: 3},
+    ],
+    swiper2: [
+      {el: 'line1', title: '物业费'},
+      {el: 'line2', title: '车位费'},
+      {el: 'line3', title: '特约服务费'},
+    ]
   },
   onReady() {
-    
-    my.createSelectorQuery()
-      .select('#area')
+    let data1, data2, data3;
+    this.renderGraph('area1', data1, drawChart);
+    this.renderGraph('area2', data2, drawChart);
+    this.renderGraph('area3', data3, drawChart);
+    this.renderGraph('line1', data1, drawChart2);
+  },
+  onSelected(){
+    // 日期选定回调
+  },
+  switchDetails(){
+    // 详情展开和收起
+    this.setData({ isUpDetails: !this.data.isUpDetails });
+  },
+  titleClick(){
+    // 
+  },
+  renderGraph(el, data, method){
+    // 渲染圆形图
+    // -- params --
+    // el canvas元素id
+    // data 渲染图形的数据
+    // method 渲染图形的方法
+    dd.createSelectorQuery()
+      .select('#' + el)
       .boundingClientRect()
       .exec((res) => {
-        // 获取分辨率
-        const pixelRatio = my.getSystemInfoSync().pixelRatio;
-        // 获取画布实际宽高
+        const pixelRatio = dd.getSystemInfoSync().pixelRatio
         const canvasWidth = res[0].width;
         const canvasHeight = res[0].height;
-        // 高清解决方案
-        // console.log(res, pixelRatio)
         this.setData({
           width: canvasWidth * pixelRatio,
           height: canvasHeight * pixelRatio
-        });
-        const myCtx = my.createCanvasContext('area');
-        myCtx.scale(pixelRatio, pixelRatio); // �必要！按照设置的分辨率进行放大
-        const canvas = new F2.Renderer(myCtx);
-        this.canvas = canvas;
-        //console.log(res[0].width, res[0].height);
-        drawChart(canvas, res[0].width, res[0].height);
-      });
-    
-    my.createSelectorQuery()
-      .select('#line')
-      .boundingClientRect()
-      .exec((res) => {
-        // 获取分辨率
-        const pixelRatio = my.getSystemInfoSync().pixelRatio;
-        // 获取画布实际宽高
-        const canvasWidth = res[0].width;
-        const canvasHeight = res[0].height;
-        // 高清解决方案
-        // console.log(res, pixelRatio)
-        this.setData({
-          width2: canvasWidth * pixelRatio,
-          height2: canvasHeight * pixelRatio
         }, ()=>{
-          const myCtx = my.createCanvasContext('line');
-          myCtx.scale(pixelRatio, pixelRatio); // �必要！按照设置的分辨率进行放大
-          const canvas = new F2.Renderer(myCtx);
-          this.canvas2 = canvas;
-          //console.log(res[0].width, res[0].height);
-          drawChart2(canvas, res[0].width, res[0].height);
-        });
-        
+          const ddCtx = dd.createCanvasContext(el);
+          ddCtx.scale(pixelRatio, pixelRatio);
+          const canvas = new F2.Renderer(ddCtx);
+          this[el] = canvas
+          method(canvas, res[0].width, res[0].height, data);
+        })
       });
   },
+
+
+
+
   touchStart(e) {
-    if (this.canvas) {
-      this.canvas.emitEvent('touchstart', [e]);
-    }
+    if (this[e.currentTarget.id]) this[e.currentTarget.id].emitEvent('touchstart', [e]);
   },
   touchMove(e) {
-    if (this.canvas) {
-      this.canvas.emitEvent('touchmove', [e]);
-    }
+    if (this[e.currentTarget.id]) this[e.currentTarget.id].emitEvent('touchmove', [e]);
   },
   touchEnd(e) {
-    if (this.canvas) {
-      this.canvas.emitEvent('touchend', [e]);
-    }
+    if (this[e.currentTarget.id]) this[e.currentTarget.id].emitEvent('touchend', [e]);
   },
-  touchStart2(e) {
-    if (this.canvas2) {
-      this.canvas2.emitEvent('touchstart', [e]);
-    }
-  },
-  touchMove2(e) {
-    if (this.canvas2) {
-      this.canvas2.emitEvent('touchmove', [e]);
-    }
-  },
-  touchEnd2(e) {
-    if (this.canvas2) {
-      this.canvas2.emitEvent('touchend', [e]);
-    }
-  }
 });
+  

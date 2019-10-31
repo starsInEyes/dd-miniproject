@@ -1,3 +1,5 @@
 {
-
+  "usingComponents": {
+    "the-date": "/components/date/date"
+  }
 }
