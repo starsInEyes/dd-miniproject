@@ -36,7 +36,6 @@ Component({
   },
   methods:{
     openPanel(){
-      return;
       this.setData({isActive:true});
       this.monthToDay(
         this.data.options.year[this.data.resultIndex[0]],

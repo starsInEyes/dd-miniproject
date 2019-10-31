@@ -7,6 +7,7 @@ let chart = null;
 let flag = true;
 let flag2 = true;
 let flag3 = true;
+let flag4 = true;
 let today = dateFormatter('yyyy-MM-dd', new Date())
 
 let exampleData = [
@@ -23,6 +24,22 @@ let exampleData3 = [
     value: 83
   }
 ]
+let exampleData4 = [
+  {name:'维修费', proportion: 7000, a: '1'},
+  {name:'展位费', proportion: 3000, a: '1'},
+  {name:'灭火器（租）', proportion: 4000, a: '1'},
+  {name:'工本费', proportion: 1000, a: '1'},
+  {name:'合同', proportion: 5000, a: '1'},
+  {name:'中介及劳务费', proportion: 2000, a: '1'},
+  {name:'电瓶车充电', proportion: 6000, a: '1'},
+  {name:'其它', proportion: 3000, a: '1'},
+]
+let tempTotal = 0;
+exampleData4.forEach(v=>{
+  tempTotal += v.proportion;
+  v.name = v.name+' '+v.proportion+' 元';
+})
+exampleData4.total = tempTotal.toFixed(2) - 0;
 
 function drawChart(canvas, width, height, data) {
   chart = new F2.Chart({
@@ -193,7 +210,65 @@ function drawChart3(canvas, width, height, data){
   chart.line().position('date*value').color('type',['#108EE9', 'red']);
   chart.render();
 }
-
+function drawChart4(canvas, width, height, data){
+  chart = new F2.Chart({
+    el: canvas,
+    width,
+    height
+  });
+  chart.source(data);
+  chart.legend({
+    position: 'left',
+    marker: {
+      symbol: 'square',
+      radius: 8
+    }
+  });
+  chart.tooltip({
+    // showTitle: true,
+    itemMarkerStyle:{
+      symbol: 'square'
+    },
+    background:{
+      radius: 4,
+      fill: '#e2e2e2'
+    },
+    titleStyle:{ fill: '#333' },
+    nameStyle:{ fill: '#333' },
+    valueStyle:{ fill: '#333' },
+    onShow: function onShow(ev) {
+      var items = ev.items;
+      items[0].name = (items[0].name.split(' ')||[])[0]||'';
+      items[0].value = items[0].value + '元 ';
+      // items[0].name = null;
+      // items[1].value = items[1].value + '万';
+    }
+  });
+  chart.coord('polar', {
+    transposed: true,
+    innerRadius: 0.72
+  });
+  chart.axis(false);
+  chart.guide().text({
+    position: ['50%', '50%'],
+    content: '总营收\n'+ data.total +' 元'
+  })
+  chart.interval()
+  .position('a*proportion')
+  .color('name', [
+    '#3EA3D8',
+    '#3DC5E7',
+    '#A0E5B8',
+    '#FEDA65',
+    '#FD9F82',
+    '#F97494',
+    '#E6BDF2',
+    '#837BE7',
+  ])
+  .adjust('stack');
+  chart.render();
+  return chart;
+}
 
 Page({
   data: {
@@ -398,16 +473,14 @@ Page({
       if (response && response.data && response.data.code == '0'){
         let temp = response.data.result;
         for (let i = 0; i<temp.length; i++){
-          // temp[i].lessNum = (temp[i].lessNum/10000).toFixed(1);
-          if ((temp[i].collectedYear + temp[i].lessNum)==0){
-            temp[i].progress = 0;
+          
+          if ((temp[i].collectedYear - temp[i].lessNum)==0){
+            temp[i].progress = 100;
           } else {
-            temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear+temp[i].lessNum))*100
+            temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear-temp[i].lessNum))*100
+            if (temp[i].progress > 100) temp[i].progress = 100;
           }
-
-          // 临时
-          temp[i].lessNum = ((0-temp[i].lessNum)/1000).toFixed(1);
-          temp[i].progress = (temp[i].lessNum-0)?(Math.random()*20+70):100;
+          temp[i].lessNum = (temp[i].lessNum/10000).toFixed(1);
         }
         this.setData({ list2: temp })
       }
@@ -488,6 +561,30 @@ Page({
       })
     })
   },
+  drawChartMethod4(data){
+    dd.createSelectorQuery()
+    .select('#circle2')
+    .boundingClientRect()
+    .exec(res => {
+      // 获取分辨率
+      const pixelRatio = my.getSystemInfoSync().pixelRatio;
+      // 获取画布实际宽高
+      const canvasWidth = res[0].width;
+      const canvasHeight = res[0].height;
+
+      this.setData({
+        width4: canvasWidth * pixelRatio,
+        height4: canvasHeight * pixelRatio
+      }, ()=>{
+        const myCtx = my.createCanvasContext('circle2');
+        if (flag4) myCtx.scale(pixelRatio, pixelRatio);
+        flag4 = false;
+        const canvas = new F2.Renderer(myCtx);
+        this.circle2 = canvas;
+        drawChart4(canvas, res[0].width, res[0].height, data);
+      });
+    })
+  },
   tabSwitch1(){
     // 切换到物业费
     if (this.data.currentTab == 1) return;
@@ -519,6 +616,14 @@ Page({
       this.getParkingData(this.data.selectedDate);
     }
     this.setData({isHided: false});
+  },
+  tabSwitch3(){
+    // 切换到特约服务费
+    console.log('go to 4')
+    if (this.data.currentTab == 3) return;
+    this.setData({currentTab: 3});
+    flag4 = true;
+    this.drawChartMethod4(exampleData4);
   },
   tapMenus(){
     // 点击菜单按钮

@@ -148,7 +148,7 @@ canvas{
 }
 
 .table{
-  margin-top: 20px;
+  
 }
 .table .tr{
   display:flex;
@@ -248,4 +248,12 @@ canvas{
   justify-content: space-between;
   color: #999;
   padding-bottom: 3px;
+}
+
+/* 特约服务费 */
+.ty-2{
+  border-bottom: 4px solid #eee;
+}
+.ty-3{
+  border-bottom: 0;
 }
