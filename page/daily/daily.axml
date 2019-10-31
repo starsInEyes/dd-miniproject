@@ -12,9 +12,9 @@
   <!-- tab切换栏 -->
   <view class="tab">
     <view class="ul">
-      <view class="li {{currentTab==1?'active':''}}" onTap="tabSwitch1">物业费</view>
-      <view class="li {{currentTab==2?'active':''}}" onTap="tabSwitch2">停车费</view>
-      <view class="li {{currentTab==3?'active':''}}" onTap="tabSwitch3">特约服务费</view>
+      <view class="li {{currentTab==1?'active':''}}" data-field="1" onTap="tabSwitch">物业费</view>
+      <view class="li {{currentTab==2?'active':''}}" data-field="2" onTap="tabSwitch">停车费</view>
+      <view class="li {{currentTab==3?'active':''}}" data-field="3" onTap="tabSwitch">特约服务费</view>
     </view>
     <view class="menu" onTap="tapMenus">
       <image mode="menus" src="../../images/menus.svg"/>
@@ -32,24 +32,22 @@
           <view class="t-data">
             <view class="t-data-line">
               <view class="t-legend"></view>
-              <text>全年已收 {{collectedYear}} 万</text>
+              <text>全年已收 {{data1.collectedYear}} 万</text>
             </view>
             <view class="t-data-line">
               <view class="t-legend"></view>
-              <text>全年待收 {{dueIn}} 万</text>
+              <text>全年待收 {{data1.dueIn}} 万</text>
             </view>
           </view>
         </view>
       </view>
       <view class="canvas-box">
-        <view class="canvas-mask"></view>
         <canvas
-        id="area"
-        onTouchStart="touchStart"
-        onTouchMove="touchMove"
-        onTouchEnd="touchEnd"
-        width="{{width}}" height="{{height}}"
-      />
+          id="area"
+          onTouchStart="touchStart"
+          onTouchMove="touchMove"
+          onTouchEnd="touchEnd"
+          width="{{width}}" height="{{height}}"/>
       </view>
     </view>
 
@@ -57,21 +55,21 @@
     <view class="situation">
       <view class="item">
         <view class="i-top">
-          {{tmy.t}}<text>万</text>
+          {{data1.tmy.t}}<text>万</text>
         </view>
         <view class="i-bottom">今日已收</view>
       </view>
       <view class="interval-line"></view>
       <view class="item">
         <view class="i-top">
-          {{tmy.m}}<text>万</text>
+          {{data1.tmy.m}}<text>万</text>
         </view>
         <view class="i-bottom">本月已收</view>
       </view>
       <view class="interval-line"></view>
       <view class="item">
         <view class="i-top">
-          {{tmy.y}}<text>万</text>
+          {{data1.tmy.y}}<text>万</text>
         </view>
         <view class="i-bottom">全年已收</view>
       </view>
@@ -82,21 +80,21 @@
       <view class="thead">
         <view class="tr">
           <view class="th ft-col">项目名称</view>
-          <view class="th" onTap="sort" data-field="taxNum">目标<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="collectedMonth">当月已收<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="lessNum">差额<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="difference">差额%<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data1.list" data-field="taxNum">目标<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data1.list" data-field="collectedMonth">当月已收<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data1.list" data-field="lessNum">差额<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data1.list" data-field="difference">差额%<image src="../../images/sort.svg"/></view>
         </view>
       </view>
       <view class="tbody">
-        <view class="tr ft-row" a:if="{{list.sum}}">
-          <view class="td ft-col">{{list.sum.name}}</view>
-          <view class="td">{{list.sum.taxNum + '%'}}</view>
-          <view class="td">{{(list.sum.collectedMonth/10000).toFixed(1)-0}} 万</view>
-          <view class="td">{{(list.sum.lessNum/10000).toFixed(1)-0}} 万</view>
-          <view class="td">{{list.sum.difference}}%</view>
+        <view class="tr ft-row" a:if="{{data1.list.sum}}">
+          <view class="td ft-col">{{data1.list.sum.name}}</view>
+          <view class="td">{{data1.list.sum.taxNum}}%</view>
+          <view class="td">{{(data1.list.sum.collectedMonth/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{(data1.list.sum.lessNum/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{data1.list.sum.difference}}%</view>
         </view>
-        <view class="tr {{item.lessNum>=0?'':'warn'}}" a:for="{{list}}">
+        <view class="tr {{item.lessNum>=0?'':'warn'}}" a:for="{{data1.list}}">
           <view class="td ft-col">{{item.name}}</view>
           <view class="td">{{item.taxNum + '%'}}</view>
           <view class="td">{{(item.collectedMonth/10000).toFixed(1)-0}} 万</view>
@@ -113,7 +111,7 @@
     <!-- 停车营收日报 -->
     <view class="canvas-title">停车营收日报</view>
     <view class="canvas-box">
-      <canvas id="circle" width="{{width2}}" height="{{height2}}"/>
+      <canvas id="circle" width="{{width}}" height="{{height}}"/>
     </view>
 
     <!-- 车位收缴情况 -->
@@ -123,15 +121,15 @@
     <view class="parking-situation">
       <view>
         <view>项目总数</view>
-        <view>{{parkingToday.regionNum}}</view>
+        <view>{{data2.parkingToday.regionNum}}</view>
       </view>
       <view class="ps-center">
         <view>项目达标率</view>
-        <view>{{parkingToday.percent}}</view>
+        <view>{{data2.parkingToday.percent}}</view>
       </view>
       <view>
         <view>未达标项目数</view>
-        <view>{{parkingToday.noteGetScore}}</view>
+        <view>{{data2.parkingToday.noteGetScore}}</view>
       </view>
     </view>
 
@@ -139,10 +137,10 @@
     <view class="canvas-title">项目收缴进度</view>
     <view class="progress">
       <view class="p-title">差额</view>
-      <view class="p-item" a:for="{{list2}}">
+      <view class="p-item" a:for="{{data2.list}}">
         <text>
           <text>{{item.name}}</text>
-          <text>￥{{item.lessNum}}万</text>
+          <text>￥{{item.lessNum_wy}}万</text>
         </text>
         <progress percent="{{item.progress}}" stroke-width="8"/>
       </view>
@@ -153,11 +151,11 @@
     <view class="canvas-box">
       <canvas
         id="line"
-        onTouchStart="touchStart3"
-        onTouchMove="touchMove3"
-        onTouchEnd="touchEnd3"
-        width="{{width3}}"
-        height="{{height3}}">
+        onTouchStart="touchStart"
+        onTouchMove="touchMove"
+        onTouchEnd="touchEnd"
+        width="{{width}}"
+        height="{{height}}">
       </canvas>  
     </view>
 
@@ -168,28 +166,28 @@
     <!-- 停车营收日报 -->
     <view class="canvas-title">特约服务费营收日报</view>
     <view class="canvas-box">
-      <canvas id="circle2" width="{{width4}}" height="{{height4}}"/>
+      <canvas id="circle2" width="{{width}}" height="{{height}}"/>
     </view>
 
     <!-- 今日、本月、全年已收情况 -->
     <view class="situation ty-2">
       <view class="item">
         <view class="i-top">
-          180<text>万</text>
+          {{data3.tmy.t}}<text>万</text>
         </view>
         <view class="i-bottom">今日已收</view>
       </view>
       <view class="interval-line"></view>
       <view class="item">
         <view class="i-top">
-          3000<text>万</text>
+          {{data3.tmy.m}}<text>万</text>
         </view>
         <view class="i-bottom">本月已收</view>
       </view>
       <view class="interval-line"></view>
       <view class="item">
         <view class="i-top">
-          8180<text>万</text>
+          {{data3.tmy.y}}<text>万</text>
         </view>
         <view class="i-bottom">全年已收</view>
       </view>
@@ -200,15 +198,15 @@
     <view class="parking-situation ty-3">
       <view>
         <view>项目总数</view>
-        <view>19</view>
+        <view>{{data3.listInfo.total}}</view>
       </view>
       <view class="ps-center">
         <view>项目达标率</view>
-        <view>100%</view>
+        <view>{{data3.listInfo.utsRate}}</view>
       </view>
       <view>
         <view>未达标项目数</view>
-        <view>0</view>
+        <view>{{data3.listInfo.notUpToStandard}}</view>
       </view>
     </view>
     <!-- 表格 -->
@@ -216,21 +214,21 @@
       <view class="thead">
         <view class="tr">
           <view class="th ft-col">项目名称</view>
-          <view class="th" onTap="sort" data-field="taxNum">目标<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="collectedMonth">当月已收<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="lessNum">差额<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="difference">差额%<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list" data-field="taxNum">目标<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list" data-field="collectedMonth">当月已收<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list" data-field="lessNum">差额<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list" data-field="difference">差额%<image src="../../images/sort.svg"/></view>
         </view>
       </view>
       <view class="tbody">
-        <view class="tr ft-row" a:if="{{list.sum}}">
-          <view class="td ft-col">{{list.sum.name}}</view>
-          <view class="td">{{list.sum.taxNum + '%'}}</view>
-          <view class="td">{{(list.sum.collectedMonth/10000).toFixed(1)-0}} 万</view>
-          <view class="td">{{(list.sum.lessNum/10000).toFixed(1)-0}} 万</view>
-          <view class="td">{{list.sum.difference}}%</view>
+        <view class="tr ft-row" a:if="{{data3.list.sum}}">
+          <view class="td ft-col">{{data3.list.sum.name}}</view>
+          <view class="td">{{data3.list.sum.taxNum + '%'}}</view>
+          <view class="td">{{(data3.list.sum.collectedMonth/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{(data3.list.sum.lessNum/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{data3.list.sum.difference}}%</view>
         </view>
-        <view class="tr {{item.lessNum>=0?'':'warn'}}" a:for="{{list}}">
+        <view class="tr {{item.lessNum>=0?'':'warn'}}" a:for="{{data3.list}}">
           <view class="td ft-col">{{item.name}}</view>
           <view class="td">{{item.taxNum + '%'}}</view>
           <view class="td">{{(item.collectedMonth/10000).toFixed(1)-0}} 万</view>
@@ -245,15 +243,15 @@
     <view class="parking-situation ty-3">
       <view>
         <view>项目总数</view>
-        <view>19</view>
+        <view>{{data3.list2Info.total}}</view>
       </view>
       <view class="ps-center">
         <view>项目达标率</view>
-        <view>100%</view>
+        <view>{{data3.list2Info.utsRate}}</view>
       </view>
       <view>
         <view>未达标项目数</view>
-        <view>0</view>
+        <view>{{data3.list2Info.notUpToStandard}}</view>
       </view>
     </view>
     <!-- 表格 -->
@@ -261,21 +259,21 @@
       <view class="thead">
         <view class="tr">
           <view class="th ft-col">项目名称</view>
-          <view class="th" onTap="sort" data-field="taxNum">目标<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="collectedMonth">当月已收<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="lessNum">差额<image src="../../images/sort.svg"/></view>
-          <view class="th" onTap="sort" data-field="difference">差额%<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list2" data-field="taxNum">目标<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list2" data-field="collectedMonth">当月已收<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list2" data-field="lessNum">差额<image src="../../images/sort.svg"/></view>
+          <view class="th" onTap="sort" data-data="data3.list2" data-field="difference">差额%<image src="../../images/sort.svg"/></view>
         </view>
       </view>
       <view class="tbody">
-        <view class="tr ft-row" a:if="{{list.sum}}">
-          <view class="td ft-col">{{list.sum.name}}</view>
-          <view class="td">{{list.sum.taxNum + '%'}}</view>
-          <view class="td">{{(list.sum.collectedMonth/10000).toFixed(1)-0}} 万</view>
-          <view class="td">{{(list.sum.lessNum/10000).toFixed(1)-0}} 万</view>
-          <view class="td">{{list.sum.difference}}%</view>
+        <view class="tr ft-row" a:if="{{data3.list2.sum}}">
+          <view class="td ft-col">{{data3.list2.sum.name}}</view>
+          <view class="td">{{data3.list2.sum.taxNum + '%'}}</view>
+          <view class="td">{{(data3.list2.sum.collectedMonth/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{(data3.list2.sum.lessNum/10000).toFixed(1)-0}} 万</view>
+          <view class="td">{{data3.list2.sum.difference}}%</view>
         </view>
-        <view class="tr {{item.lessNum>=0?'':'warn'}}" a:for="{{list}}">
+        <view class="tr {{item.lessNum>=0?'':'warn'}}" a:for="{{data3.list2}}">
           <view class="td ft-col">{{item.name}}</view>
           <view class="td">{{item.taxNum + '%'}}</view>
           <view class="td">{{(item.collectedMonth/10000).toFixed(1)-0}} 万</view>

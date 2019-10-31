@@ -1,45 +1,20 @@
 import F2 from '@antv/my-f2';
-import { getMonthApi, getShouldApi, getList, getParkingLine, getParkingToday, getParkingProgress } from '../../request/api'
+import {
+  getMonthApi,
+  getShouldApi,
+  getList,
+  getParkingLine,
+  getParkingToday,
+  getParkingProgress,
+  getConventionCircle,
+  getConventionOther
+} from '../../request/api'
 import { dateFormatter, getSort } from '../../utils/util'
 
 const app = getApp();
-let chart = null;
-let flag = true;
-let flag2 = true;
-let flag3 = true;
-let flag4 = true;
-let today = dateFormatter('yyyy-MM-dd', new Date())
 
-let exampleData = [
-  {name: '全年已收', month: '', value: 0},
-];
-let exampleData2 = [
-  {name:'固定车位', proportion: 0, a: '1'},
-  {name:'租赁车位', proportion: 0, a: '1'},
-  {name:'临时车位', proportion: 0, a: '1'},
-]
-let exampleData3 = [
-  {
-    date: "2017-07-01",
-    value: 83
-  }
-]
-let exampleData4 = [
-  {name:'维修费', proportion: 7000, a: '1'},
-  {name:'展位费', proportion: 3000, a: '1'},
-  {name:'灭火器（租）', proportion: 4000, a: '1'},
-  {name:'工本费', proportion: 1000, a: '1'},
-  {name:'合同', proportion: 5000, a: '1'},
-  {name:'中介及劳务费', proportion: 2000, a: '1'},
-  {name:'电瓶车充电', proportion: 6000, a: '1'},
-  {name:'其它', proportion: 3000, a: '1'},
-]
-let tempTotal = 0;
-exampleData4.forEach(v=>{
-  tempTotal += v.proportion;
-  v.name = v.name+' '+v.proportion+' 元';
-})
-exampleData4.total = tempTotal.toFixed(2) - 0;
+let chart = null;
+let today = dateFormatter('yyyy-MM-dd', new Date())
 
 function drawChart(canvas, width, height, data) {
   chart = new F2.Chart({
@@ -209,6 +184,7 @@ function drawChart3(canvas, width, height, data){
   })
   chart.line().position('date*value').color('type',['#108EE9', 'red']);
   chart.render();
+  return chart;
 }
 function drawChart4(canvas, width, height, data){
   chart = new F2.Chart({
@@ -273,179 +249,99 @@ function drawChart4(canvas, width, height, data){
 Page({
   data: {
     currentTab: 1,
-    sortVal: true,
+    sortDirection: true,
     today: today,
     selectedDate: today,
-    isHided: false,
   },
   onReady() {
     // 渲染第一页-物业费
-    this.drawChartMethod(exampleData);
-    this.getPropertyData(this.data.selectedDate);
-
-    // 当小程序重新显示时，更新当页数据
-    app.dailyShow = () => {
-      switch(this.data.currentTab){
-        case 1: this.getPropertyData(this.data.selectedDate);break;
-        case 2: this.getParkingData(this.data.selectedDate);break;
-      }
-      this.setData({isHided: true});
-    }
+    if (this.data.currentTab == 1) this.getPropertyData(this.data.selectedDate);
+    else if (this.data.currentTab == 2) this.getParkingData(this.data.selectedDate);
+    else if (this.data.currentTab == 3) this.getConventionData(this.data.selectedDate);
   },
   getPropertyData(d){
-    // params
-    // d 日期
+    // params d 日期
     dd.showLoading();
 
-    let isComplete = [];
-    let checkComplete = arr=>{
-      for (let i = 0; i<arr.length; i++){ if (arr[i] == 'getting') return; }
-      dd.hideLoading();
-    }
+    let year = dateFormatter('yyyy', new Date(d));
 
-    // 层叠柱形图
-    isComplete[0] = 'getting';
-    getMonthApi({year: d.split('-')[0]}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
-        let months = ['1','2','3','4','5','6','7','8','9','10','11','12']
-        let cmLength = new Date().getMonth() + 1;
-        months = months.splice(0, cmLength);
+    Promise.all([
+      getMonthApi({year}), // 柱形图
+      getShouldApi({year}), // 日月年已收
+      getList({year}), // 收缴率列表
+    ]).then(([response1, response2, response3])=>{
+      if (response1 && response1.data && response1.data.code == '0'){
+        let temp = response1.data.result;
+        let month = new Date().getMonth() + 1;
         let data = [];
-        for (let i = 0; i<months.length; i++){
-          let suffix = (i+1) >= 10 ? (i+1) : ('0'+(i+1))
+        let suffix;
+        for (let i = 0; i<month; i++){
+          suffix = (i+1) >= 10 ? (i+1) : ('0'+(i+1));
           data[i] = {};
           data[i].name = '全年已收';
-          data[i].month = months[i];
-          data[i].value = ((temp['collectedYear'+ suffix] || 0)/10000).toFixed(1)-0;
-          
-          // ---
-          data[i+months.length] = {};
-          data[i+months.length].name = '全年待收';
-          data[i+months.length].month = months[i];
-          data[i+months.length].value = ((temp['dueIn'+ suffix] || 0)/10000).toFixed(1)-0;
+          data[i].month = i + 1 + '';
+          data[i].value = ((temp['collectedYear'+ suffix] || 0)/10000).toFixed(1) - 0;
+          data[i + month] = {};
+          data[i + month].name = '全年待收';
+          data[i + month].month = i + 1 + '';
+          data[i + month].value = ((temp['dueIn'+ suffix] || 0)/10000).toFixed(1) - 0;
         }
-
-        let temp1 = [{name: '全年已收', month: '1', value: 64811024.05},
-                    {name: '全年已收', month: '2', value: 75694834.45},
-                    {name: '全年已收', month: '3', value: 96490909.34},
-                    {name: '全年已收', month: '4', value: 100066555.296},
-                    {name: '全年已收', month: '5', value: 105387720.81},
-                    {name: '全年已收', month: '6', value: 112597223.08},
-                    {name: '全年已收', month: '7', value: 120629507.93},
-                    {name: '全年已收', month: '8', value: 129888484.15},
-                    {name: '全年已收', month: '9', value: 136961023.64}]
+        let temp1 = [{name: '全年已收', month: '1', value: 64811024.05},{name: '全年已收', month: '2', value: 75694834.45},{name: '全年已收', month: '3', value: 96490909.34},{name: '全年已收', month: '4', value: 100066555.296},{name: '全年已收', month: '5', value: 105387720.81},{name: '全年已收', month: '6', value: 112597223.08},{name: '全年已收', month: '7', value: 120629507.93},{name: '全年已收', month: '8', value: 129888484.15},{name: '全年已收', month: '9', value: 136961023.64}]
+        let temp2 = [{name: '全年待收', month: '1', value: 114083623.03},{name: '全年待收', month: '2', value: 104077898.50},{name: '全年待收', month: '3', value: 83437762.38},{name: '全年待收', month: '4', value: 74320258.51},{name: '全年待收', month: '5', value: 69189735.20},{name: '全年待收', month: '6', value: 61800206.15},{name: '全年待收', month: '7', value: 53089434.17},{name: '全年待收', month: '8', value: 48225953.71},{name: '全年待收', month: '9', value: 41681351.28}]
         for (let i = 0; i<temp1.length; i++){
-          temp1[i].value = ((temp1[i].value || 0)/10000).toFixed(1)-0;
+          temp1[i].value = ((temp1[i].value || 0)/10000).toFixed(1) - 0;
+          temp2[i].value = ((temp2[i].value || 0)/10000).toFixed(1) - 0;
         }
-        let temp2 = [{name: '全年待收', month: '1', value: 114083623.03},
-                    {name: '全年待收', month: '2', value: 104077898.50},
-                    {name: '全年待收', month: '3', value: 83437762.38},
-                    {name: '全年待收', month: '4', value: 74320258.51},
-                    {name: '全年待收', month: '5', value: 69189735.20},
-                    {name: '全年待收', month: '6', value: 61800206.15},
-                    {name: '全年待收', month: '7', value: 53089434.17},
-                    {name: '全年待收', month: '8', value: 48225953.71},
-                    {name: '全年待收', month: '9', value: 41681351.28}]
-        for (let i = 0; i<temp2.length; i++){
-          temp2[i].value = ((temp2[i].value || 0)/10000).toFixed(1)-0;
-        }
-        
         data.splice(0,9,...temp1)
-
-        data.splice(10,9,...temp2)
-        data.dateMarker = d;
-        this.setData({data1: data}, ()=>{
+        data.splice(month,9,...temp2)
+        this.setData({'data1.area': data}, ()=>{
           this.drawChartMethod(data);
         });
       }
-      isComplete[0] = 'ok'; checkComplete(isComplete);
-    })
 
-    // 物业费收缴情况
-    isComplete[1] = 'getting';
-    getShouldApi({year: d.split('-')[0]}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
+      if (response2 && response2.data && response2.data.code == '0'){
+        let temp = response2.data.result;
         this.setData({
-          collectedYear: (temp.collectedYear/10000).toFixed(1),// 全年已收
-          shouldYear: (temp.shouldYear/10000).toFixed(1),      // 全年应收
-          dueIn: (temp.dueIn/10000).toFixed(1), // 全年待收
-          tmy:{
+          'data1.collectedYear': (temp.collectedYear/10000).toFixed(1), // 全年已收
+          'data1.shouldYear': (temp.shouldYear/10000).toFixed(1), // 全年应收
+          'data1.dueIn': (temp.dueIn/10000).toFixed(1), // 全年待收
+          'data1.tmy': {
             t: (temp.collectedToday/10000).toFixed(1), // 今日已收
             m: (temp.collectedMonth/10000).toFixed(1), // 本月已收
-            y: (temp.collectedYear/10000).toFixed(1),  // 全年已收
+            y: (temp.collectedYear/10000).toFixed(1), // 全年已收
           }
         })
       }
-      isComplete[1] = 'ok'; checkComplete(isComplete);
-    })
-    // 项目收缴情况列表
-    isComplete[2] = 'getting';
-    getList({year: d.split('-')[0]}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
-        temp.sum = JSON.parse(JSON.stringify(temp[0]));
-        temp.splice(0, 1);
-        for (let i = 0; i<temp.length; i++){
-          if (!temp[i].name){
-            temp.splice(i, 1); i--;
-          }
+      
+      if (response3 && response3.data && response3.data.code == '0'){
+        let temp = response3.data.result;
+        let sum = temp.splice(0, 1)[0];
+        for (let i = 0; i<temp.length; i++) {
+          if (!temp[i].name) temp.splice(i, 1) && i--;
         }
         this.setData({
-          list: temp,
-          'list.sum': temp.sum
-        });
+          'data1.list': temp,
+          'data1.list.sum': sum,
+        })
       }
-      isComplete[2] = 'ok'; checkComplete(isComplete);
+
+      this.setData({'data1.dateMarker': d});
+      dd.hideLoading();
     })
   },
   getParkingData(d){
-    // params
-    // d 日期
+    // params d 日期
     dd.showLoading();
 
-    let isComplete = [];
-    let checkComplete = arr=>{
-      for (let i = 0; i<arr.length; i++){ if (arr[i] == 'getting') return; }
-      dd.hideLoading();
-    }
-    // 折线图
-    isComplete[0] = 'getting';
-    getParkingLine({}).then(response=>{
-      // console.log(response);
-      if (response && response.data && response.data.code == '0'){
-        // { date: "2017-07-01", value: 83 }
-        let temp = response.data.result.collectedToday;
-        let temp2 = response.data.result.average;
-        let arr = [];
-        for (let i = 0; i<temp.length; i++){
-          let date = dateFormatter('yyyy-MM-dd', new Date(new Date().getTime()-86400000*i))
-          arr[i] = {};
-          arr[i].value = temp[i];
-          arr[i].date = date;
-          arr[i].type = '当日'
-          // arr[i].value2 = temp2[i];
-          arr[temp.length+i] = {};
-          arr[temp.length+i].value = temp2[i];
-          arr[temp.length+i].date = date;
-          arr[temp.length+i].type = '平均'
-        }
-        // console.log(arr);
-        this.setData({
-          data3: arr
-        }, () => {
-          this.drawChartMethod3(arr);
-        })
-      }
-      isComplete[0] = 'ok'; checkComplete(isComplete);
-    })
+    let year = dateFormatter('yyyy', new Date(d));
 
-    // 环形图
-    isComplete[1] = 'getting';
-    getParkingToday({year: d.split('-')[0]}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
+    Promise.all([
+      getParkingToday({year}), // 环形图
+      getParkingProgress({year}), // 进度列表
+      getParkingLine({}), // 折线图
+    ]).then(([response1, response2, response3])=>{
+      if (response1 && response1.data && response1.data.code == '0'){
+        let temp = response1.data.result;
         let data = [
           {name:'固定车位 ' + temp.fixed + ' 元', proportion: temp.fixed, a: '1'},
           {name:'租赁车位 ' + temp.rent + ' 元', proportion: temp.rent, a: '1'},
@@ -454,37 +350,126 @@ Page({
         data.dateMarker = d;
         data.total = temp.totalMoneyIn;
         this.setData({
-          data2: data,
-          parkingToday:{
+          'data2.circle': data,
+          'data2.parkingToday': {
             regionNum: temp.regionNum,
             percent: (temp.percent*100).toFixed(2) + '%',
-            noteGetScore: temp.noteGetScore
+            noteGetScore: temp.noteGetScore,
           }
-        }, ()=>{
-          this.drawChartMethod2(this.data.data2)
-        })
+        }, ()=>{ this.drawChartMethod2(this.data.data2.circle) });
       }
-      isComplete[1] = 'ok'; checkComplete(isComplete);
-    })
 
-    // 进度列表
-    isComplete[2] = 'getting';
-    getParkingProgress({year: d.split('-')[0]}).then(response=>{
-      if (response && response.data && response.data.code == '0'){
-        let temp = response.data.result;
+      if (response2 && response2.data && response2.data.code == '0'){
+        let temp = response2.data.result;
         for (let i = 0; i<temp.length; i++){
-          
-          if ((temp[i].collectedYear - temp[i].lessNum)==0){
-            temp[i].progress = 100;
-          } else {
-            temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear-temp[i].lessNum))*100
+          if (temp[i].collectedYear - temp[i].lessNum == 0) temp[i].progress = 100;
+          else {
+            temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear-temp[i].lessNum))*100;
             if (temp[i].progress > 100) temp[i].progress = 100;
           }
-          temp[i].lessNum = (temp[i].lessNum/10000).toFixed(1);
+          temp[i].lessNum_wy = (temp[i].lessNum/10000).toFixed(1);
         }
-        this.setData({ list2: temp })
+        this.setData({'data2.list': temp});
       }
-      isComplete[2] = 'ok'; checkComplete(isComplete);
+
+      if (response3 && response3.data && response3.data.code == '0'){
+        let collToday = response3.data.result.collectedToday;
+        let average = response3.data.result.average;
+        let data = [];
+        for (let i = 0; i<collToday.length; i++){
+          let date = dateFormatter('yyyy-MM-dd', new Date(new Date().getTime()-24*60*60*1000*i));
+          data[i] = {};
+          data[i].value = collToday[i];
+          data[i].date = date;
+          data[i].type = '当日';
+          data[i + collToday.length] = {};
+          data[i + collToday.length].value = average[i];
+          data[i + collToday.length].date = date;
+          data[i + collToday.length].type = '平均';
+        }
+        this.setData({'data2.line': data}, ()=>{
+          this.drawChartMethod3(data);
+        })
+      }
+
+      this.setData({'data2.dateMarker': d});
+      dd.hideLoading();
+    })
+  },
+  getConventionData(d){
+    dd.showLoading();
+
+    Promise.all([
+      getConventionCircle({date: d}),
+      getConventionOther({date: d, checkTypeId: 5008}),
+      getConventionOther({date: d, checkTypeId: 5004}),
+    ]).then(([response1, response2, response3])=>{
+      if (response1 && response1.data && response1.data.code == '0'){
+        let temp = response1.data.result;
+        let data = [
+          {name:'维修费', proportion: temp.fix},
+          {name:'展位费', proportion: temp.booth},
+          {name:'灭火器（租）', proportion: temp.anni},
+          {name:'工本费', proportion: temp.pro},
+          {name:'合同', proportion: temp.contract},
+          {name:'中介及劳务费', proportion: temp.agen},
+          {name:'电瓶车充电', proportion: temp.bike},
+          {name:'其它', proportion: temp.others},
+        ];
+        let tempTotal = 0;
+        data.forEach(v=>{
+          tempTotal += v.proportion;
+          v.name = v.name+' '+v.proportion+' 元';
+        })
+        data.total = tempTotal.toFixed(2) - 0;
+        this.setData({
+          'data3.circle': data,
+          'data3.tmy': {
+            t: temp.today,
+            m: temp.month,
+            y: temp.year,
+          }
+        }, ()=>{ this.drawChartMethod4(data) });
+      }
+
+      if (response2 && response2.data && response2.data.code == '0'){
+        let temp = response2.data.result;
+        temp.sum = temp.splice(temp.length-1, 1)[0];
+        let notUpToStandard = 0;
+        for (let i = 0; i<temp.length; i++) {
+          if (!temp[i].name) temp.splice(i, 1) && i--;
+          if (temp[i].lessNum < 0) notUpToStandard ++;
+        }
+        this.setData({
+          'data3.list': temp,
+          'data3.listInfo': {
+            total: temp.length,
+            notUpToStandard: notUpToStandard,
+            utsRate: (((temp.length - notUpToStandard)/temp.length).toFixed(2)-0)*100 + '%'
+          }
+        });
+      }
+
+      if (response3 && response3.data && response3.data.code == '0'){
+        let temp = response3.data.result;
+        temp.sum = temp.splice(temp.length-1, 1)[0];
+        let notUpToStandard = 0;
+        for (let i = 0; i<temp.length; i++) {
+          if (!temp[i].name) temp.splice(i, 1) && i--;
+          if (temp[i].lessNum < 0) notUpToStandard ++;
+        }
+        this.setData({
+          'data3.list2': temp,
+          'data3.list2Info': {
+            total: temp.length,
+            notUpToStandard: notUpToStandard,
+            utsRate: (((temp.length - notUpToStandard)/temp.length).toFixed(2)-0)*100 + '%'
+          }
+        });
+      }
+
+      this.setData({'data3.dateMarker': d});
+      dd.hideLoading();
     })
   },
   drawChartMethod(data){
@@ -501,13 +486,12 @@ Page({
         // console.log(res, pixelRatio)
         this.setData({
           width: canvasWidth * pixelRatio,
-          height: canvasHeight * pixelRatio
+          height: canvasHeight * pixelRatio,
         }, ()=>{
-          const myCtx = dd.createCanvasContext('area');
-          if (flag) myCtx.scale(pixelRatio, pixelRatio); // 必要！按照设置的分辨率进行放大
-          flag = false;
-          const canvas = new F2.Renderer(myCtx);
-          this.canvas = canvas;
+          let myCtx = dd.createCanvasContext('area');
+          if (!this.area) myCtx.scale(pixelRatio, pixelRatio);
+          let canvas = new F2.Renderer(myCtx);
+          this.area = canvas;
           // 绘图
           drawChart(canvas, res[0].width, res[0].height, data);
         });
@@ -525,13 +509,12 @@ Page({
       const canvasHeight = res[0].height;
 
       this.setData({
-        width2: canvasWidth * pixelRatio,
-        height2: canvasHeight * pixelRatio
+        width: canvasWidth * pixelRatio,
+        height: canvasHeight * pixelRatio,
       }, ()=>{
-        const myCtx = my.createCanvasContext('circle');
-        if (flag2) myCtx.scale(pixelRatio, pixelRatio);
-        flag2 = false;
-        const canvas = new F2.Renderer(myCtx);
+        let myCtx = my.createCanvasContext('circle');
+        if (!this.circle) myCtx.scale(pixelRatio, pixelRatio);
+        let canvas = new F2.Renderer(myCtx);
         this.circle = canvas;
         drawChart2(canvas, res[0].width, res[0].height, data);
       });
@@ -546,17 +529,16 @@ Page({
       const pixelRatio = my.getSystemInfoSync().pixelRatio;
       // 获取画布实际宽高
       const canvasWidth = res[0].width;
-      const canvasHeight = res[0].height;
+      const canvasHeight = res[0].height; 
 
       this.setData({
-        width3: canvasWidth * pixelRatio,
-        height3: canvasHeight * pixelRatio
+        width: canvasWidth * pixelRatio,
+        height: canvasHeight * pixelRatio
       }, ()=>{
-        const myCtx = dd.createCanvasContext('line');
-        if (flag3) myCtx.scale(pixelRatio, pixelRatio);
-        flag3 = false;
-        const canvas = new F2.Renderer(myCtx);
-        this.canvas3 = canvas
+        let myCtx = dd.createCanvasContext('line');
+        if (!this.line) myCtx.scale(pixelRatio, pixelRatio);
+        let canvas = new F2.Renderer(myCtx);
+        this.line = canvas;
         drawChart3(canvas, res[0].width, res[0].height, data)
       })
     })
@@ -573,72 +555,61 @@ Page({
       const canvasHeight = res[0].height;
 
       this.setData({
-        width4: canvasWidth * pixelRatio,
-        height4: canvasHeight * pixelRatio
+        width: canvasWidth * pixelRatio,
+        height: canvasHeight * pixelRatio
       }, ()=>{
-        const myCtx = my.createCanvasContext('circle2');
-        if (flag4) myCtx.scale(pixelRatio, pixelRatio);
-        flag4 = false;
-        const canvas = new F2.Renderer(myCtx);
+        let myCtx = my.createCanvasContext('circle2');
+        if (!this.circle2) myCtx.scale(pixelRatio, pixelRatio);
+        let canvas = new F2.Renderer(myCtx);
         this.circle2 = canvas;
         drawChart4(canvas, res[0].width, res[0].height, data);
       });
     })
   },
-  tabSwitch1(){
-    // 切换到物业费
-    if (this.data.currentTab == 1) return;
-    this.setData({currentTab: 1});
-    flag = true;
-    // 如果图表数据存在，并且图表日期与当前日期一致，并且不曾切换至后台
-    if (this.data.data1 && (this.data.data1.dateMarker == this.data.selectedDate) && !this.data.isHided){
-      // 直接渲染
-      this.drawChartMethod(this.data.data1);
+  tabSwitch(event){
+    let field = event.target.dataset.field;
+    if (field == this.data.currentTab) return;
+    this.setData({currentTab: field-0});
+    if (!this.data['data'+ field] || this.data['data'+ field].dateMarker != this.data.selectedDate) {
+      if (field == 1) this.getPropertyData(this.data.selectedDate);
+      else if (field == 2) this.getParkingData(this.data.selectedDate);
+      else if (field == 3) this.getConventionData(this.data.selectedDate);
     } else {
-      // 更新数据
-      this.getPropertyData(this.data.selectedDate);
+      this.area = undefined;
+      this.circle = undefined;
+      this.line = undefined;
+      this.circle2 = undefined;
+      if (field == 1) this.drawChartMethod(this.data.data1.area);
+      else if (field == 2) {
+        this.drawChartMethod2(this.data.data2.circle);
+        this.drawChartMethod3(this.data.data2.line);
+      }
+      else if (field == 3) this.drawChartMethod4(this.data.data3.circle);
     }
-    this.setData({isHided: false});
-  },
-  tabSwitch2(){
-    // 切换到停车费
-    if (this.data.currentTab == 2) return;
-    this.setData({currentTab: 2});
-    flag2 = true;
-    flag3 = true;
-    // 如果图表数据存在，并且图表日期与当前日期一致，并且不曾切换至后台
-    if (this.data.data2 && (this.data.data2.dateMarker == this.data.selectedDate) && !this.data.isHided){
-      // 直接渲染
-      this.drawChartMethod2(this.data.data2);
-      this.drawChartMethod3(this.data.data3);
-    } else {
-      // 更新数据
-      this.getParkingData(this.data.selectedDate);
-    }
-    this.setData({isHided: false});
-  },
-  tabSwitch3(){
-    // 切换到特约服务费
-    console.log('go to 4')
-    if (this.data.currentTab == 3) return;
-    this.setData({currentTab: 3});
-    flag4 = true;
-    this.drawChartMethod4(exampleData4);
   },
   tapMenus(){
     // 点击菜单按钮
   },
   onSelected(date){
+    // 切换日期
+    this.setData({selectedDate: date});
     switch(this.data.currentTab){
-      case 1: this.getPropertyData(date);break;
-      case 2: this.getParkingData(date);break;
+      case 1: this.getPropertyData(date); break;
+      case 2: this.getParkingData(date); break;
+      case 3: this.getConventionData(date); break;
     }
-    this.setData({selectedDate: date})
   },
   sort(event){
     // 根据某个字段对列表排序
     let field = event.target.dataset.field;
-    let temp = this.data.list;
+    let data = event.target.dataset.data;
+    let temp;
+    if (data.indexOf('.') < 0){
+      temp = this.data[data];
+    } else {
+      let tempFields = data.split('.');
+      temp = this.data[tempFields[0]][tempFields[1]];
+    }
     let arr = [];
     let isNoEqual = false;
     let equalTemp;
@@ -651,52 +622,40 @@ Page({
     if (!isNoEqual) return;
     // 获取基于当前字段的，相对于原数组的排序
     let sortArr;
-    if (this.sortVal){
+    if (this.sortDirection){
       sortArr = getSort(arr);
-      this.sortVal = false;
+      this.sortDirection = false;
     }
     else{
       sortArr = getSort(arr).reverse();
-      this.sortVal = true;
+      this.sortDirection = true;
     }
     // 根据获得的排序，重新排列数组
     let result = [];
     for (let j = 0; j<sortArr.length; j++){
       result.push(temp[sortArr[j]]);
     }
+    
+    for (let k in temp){
+      if (/^\d+$/.test(k)) continue;
+      result[k] = temp[k]
+    }
+
     this.setData({
-      list: result,
-      'list.sum': temp.sum,
+      [data]: result
     })
+    
   },
   touchStart(e) {
-    if (this.canvas) {
-      this.canvas.emitEvent('touchstart', [e]);
-    }
+    let id = e.currentTarget.id;
+    if (this[id]) this[id].emitEvent('touchstart', [e]);
   },
   touchMove(e) {
-    if (this.canvas) {
-      this.canvas.emitEvent('touchmove', [e]);
-    }
+    let id = e.currentTarget.id;
+    if (this[id]) this[id].emitEvent('touchmove', [e]);
   },
   touchEnd(e) {
-    if (this.canvas) {
-      this.canvas.emitEvent('touchend', [e]);
-    }
-  },
-  touchStart3(e) {
-    if (this.canvas3) {
-      this.canvas3.emitEvent('touchstart', [e]);
-    }
-  },
-  touchMove3(e) {
-    if (this.canvas3) {
-      this.canvas3.emitEvent('touchmove', [e]);
-    }
-  },
-  touchEnd3(e) {
-    if (this.canvas3) {
-      this.canvas3.emitEvent('touchend', [e]);
-    }
+    let id = e.currentTarget.id;
+    if (this[id]) this[id].emitEvent('touchend', [e]);
   },
 });

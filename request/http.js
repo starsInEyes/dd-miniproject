@@ -1,8 +1,8 @@
 let domain;
 switch(process.env.NODE_ENV){
-  // case 'development': domain = 'http://10.10.150.148:8022';break;
-  // case 'development': domain = 'http://10.10.150.196:8022';break;
-  case 'development': domain = 'http://121.40.155.130/dingtalk';break;
+  // case 'development': domain = 'http://10.10.150.148:8022';break; // 小刚
+  // case 'development': domain = 'http://10.10.150.196:8022';break; // 本地
+  case 'development': domain = 'http://121.40.155.130/dingtalk';break; // 线上
   case 'production': domain = 'http://121.40.155.130/dingtalk';break;
 }
 
