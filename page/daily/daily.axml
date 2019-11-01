@@ -4,7 +4,7 @@
   <view class="header">
     <text>经营日报</text>
     <view class="h-date">
-      <the-date defaultDate="{{today}}" onSelected="onSelected" />
+      <the-date defaultDate="{{yesterday}}" onSelected="onSelected" />
       <!-- <view class="icon-down"></view> -->
     </view>
   </view>

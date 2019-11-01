@@ -7,7 +7,8 @@ let chart = null;
 let flag = true;
 let flag2 = true;
 let flag3 = true;
-let today = dateFormatter('yyyy-MM-dd', new Date())
+let today = dateFormatter('yyyy-MM-dd', new Date());
+let yesterday = dateFormatter('yyyy-MM-dd', new Date(new Date().getTime() - 24*60*60*1000));
 
 let exampleData = [
   {name: '全年已收', month: '', value: 0},
@@ -200,7 +201,8 @@ Page({
     currentTab: 1,
     sortVal: true,
     today: today,
-    selectedDate: today,
+    yesterday: yesterday,
+    selectedDate: yesterday,
     isHided: false,
   },
   onReady() {
