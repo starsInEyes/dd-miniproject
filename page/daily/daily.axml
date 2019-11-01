@@ -143,7 +143,7 @@
           <text>{{item.name}}</text>
           <text>￥{{item.lessNum}}万</text>
         </text>
-        <progress percent="{{item.progress}}" stroke-width="8"/>
+        <progress percent="{{item.progress}}" stroke-width="8" activeColor="{{item.isComplete?'#108EE9':'#E04343'}}"/>
       </view>
     </view>
 

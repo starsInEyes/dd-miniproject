@@ -190,7 +190,7 @@ function drawChart3(canvas, width, height, data){
       radius: 5,
     }
   })
-  chart.line().position('date*value').color('type',['#108EE9', 'red']);
+  chart.line().position('date*value').color('type',['#108EE9', '#E04343']);
   chart.render();
 }
 
@@ -234,7 +234,7 @@ Page({
       if (response && response.data && response.data.code == '0'){
         let temp = response.data.result;
         let months = ['1','2','3','4','5','6','7','8','9','10','11','12']
-        let cmLength = new Date().getMonth() + 1;
+        let cmLength = new Date(new Date().getTime() - 24*60*60*1000).getMonth() + 1;
         months = months.splice(0, cmLength);
         let data = [];
         for (let i = 0; i<months.length; i++){
@@ -278,7 +278,7 @@ Page({
         
         data.splice(0,9,...temp1)
 
-        data.splice(10,9,...temp2)
+        data.splice(months.length,9,...temp2)
         data.dateMarker = d;
         this.setData({data1: data}, ()=>{
           this.drawChartMethod(data);
@@ -398,16 +398,14 @@ Page({
       if (response && response.data && response.data.code == '0'){
         let temp = response.data.result;
         for (let i = 0; i<temp.length; i++){
-          // temp[i].lessNum = (temp[i].lessNum/10000).toFixed(1);
-          if ((temp[i].collectedYear + temp[i].lessNum)==0){
+          if ((temp[i].collectedYear - temp[i].lessNum)==0){
             temp[i].progress = 0;
           } else {
-            temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear+temp[i].lessNum))*100
+            temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear - temp[i].lessNum))*100
+            if (temp[i].progress > 100) temp[i].progress = 100;
+            if (temp[i].progress >= 100) temp[i].isComplete = true;
           }
-
-          // 临时
-          temp[i].lessNum = ((0-temp[i].lessNum)/1000).toFixed(1);
-          temp[i].progress = (temp[i].lessNum-0)?(Math.random()*20+70):100;
+          temp[i].lessNum = (temp[i].lessNum/10000).toFixed(1);
         }
         this.setData({ list2: temp })
       }
