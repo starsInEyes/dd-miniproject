@@ -368,8 +368,8 @@ Page({
           else {
             temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear-temp[i].lessNum))*100;
             if (temp[i].progress > 100) temp[i].progress = 100;
-            if (temp[i].progress >= 100) temp[i].isComplete = true;
           }
+          if (temp[i].progress >= 100) temp[i].isComplete = true;
           temp[i].lessNum_wy = (temp[i].lessNum/10000).toFixed(1);
         }
         this.setData({'data2.list': temp});
@@ -437,7 +437,7 @@ Page({
 
       if (response2 && response2.data && response2.data.code == '0'){
         let temp = response2.data.result;
-        temp.sum = temp.splice(temp.length-1, 1)[0];
+        let sum = temp.splice(temp.length-1, 1)[0];
         let notUpToStandard = 0;
         for (let i = 0; i<temp.length; i++) {
           if (!temp[i].name) temp.splice(i, 1) && i--;
@@ -445,6 +445,7 @@ Page({
         }
         this.setData({
           'data3.list': temp,
+          'data3.list.sum': sum,
           'data3.listInfo': {
             total: temp.length,
             notUpToStandard: notUpToStandard,
@@ -455,7 +456,7 @@ Page({
 
       if (response3 && response3.data && response3.data.code == '0'){
         let temp = response3.data.result;
-        temp.sum = temp.splice(temp.length-1, 1)[0];
+        let sum = temp.splice(temp.length-1, 1)[0];
         let notUpToStandard = 0;
         for (let i = 0; i<temp.length; i++) {
           if (!temp[i].name) temp.splice(i, 1) && i--;
@@ -463,6 +464,7 @@ Page({
         }
         this.setData({
           'data3.list2': temp,
+          'data3.list2.sum': sum,
           'data3.list2Info': {
             total: temp.length,
             notUpToStandard: notUpToStandard,
@@ -645,7 +647,8 @@ Page({
     }
 
     this.setData({
-      [data]: result
+      [data]: result,
+      [data + '.sum']: result.sum,
     })
     
   },
