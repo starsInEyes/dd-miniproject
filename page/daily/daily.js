@@ -15,6 +15,7 @@ const app = getApp();
 
 let chart = null;
 let today = dateFormatter('yyyy-MM-dd', new Date())
+let yesterday = dateFormatter('yyyy-MM-dd', new Date(new Date().getTime() - 24*60*60*1000))
 
 function drawChart(canvas, width, height, data) {
   chart = new F2.Chart({
@@ -182,7 +183,7 @@ function drawChart3(canvas, width, height, data){
       radius: 5,
     }
   })
-  chart.line().position('date*value').color('type',['#108EE9', 'red']);
+  chart.line().position('date*value').color('type',['#108EE9', '#E04343']);
   chart.render();
   return chart;
 }
@@ -250,8 +251,9 @@ Page({
   data: {
     currentTab: 1,
     sortDirection: true,
-    today: today,
-    selectedDate: today,
+    today,
+    yesterday,
+    selectedDate: yesterday,
   },
   onReady() {
     // 渲染第一页-物业费
@@ -272,7 +274,7 @@ Page({
     ]).then(([response1, response2, response3])=>{
       if (response1 && response1.data && response1.data.code == '0'){
         let temp = response1.data.result;
-        let month = new Date().getMonth() + 1;
+        let month = new Date(new Date().getTime() - 24*60*60*1000).getMonth() + 1;
         let data = [];
         let suffix;
         for (let i = 0; i<month; i++){
@@ -366,6 +368,7 @@ Page({
           else {
             temp[i].progress = (temp[i].collectedYear/(temp[i].collectedYear-temp[i].lessNum))*100;
             if (temp[i].progress > 100) temp[i].progress = 100;
+            if (temp[i].progress >= 100) temp[i].isComplete = true;
           }
           temp[i].lessNum_wy = (temp[i].lessNum/10000).toFixed(1);
         }

@@ -3,6 +3,7 @@ import { dateFormatter } from '../../utils/util'
 
 const app = getApp();
 const today = dateFormatter('yyyy-MM-dd', new Date());
+const yesterday = dateFormatter('yyyy-MM-dd', new Date(new Date().getTime() - 24*60*60*1000));
 
 function drawChart(canvas, width, height, data) {
   let chart = new F2.Chart({
@@ -143,7 +144,8 @@ function drawChart2(canvas, width, height, data) {
 
 Page({
   data: {
-    today: today,
+    today,
+    yesterday,
     isUpDetails: false,
 
     swiper: [

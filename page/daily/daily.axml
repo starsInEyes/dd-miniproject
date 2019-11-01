@@ -4,7 +4,7 @@
   <view class="header">
     <text>经营日报</text>
     <view class="h-date">
-      <the-date defaultDate="{{today}}" onSelected="onSelected" />
+      <the-date defaultDate="{{yesterday}}" onSelected="onSelected" />
       <view class="icon-down"></view>
     </view>
   </view>
@@ -142,7 +142,7 @@
           <text>{{item.name}}</text>
           <text>￥{{item.lessNum_wy}}万</text>
         </text>
-        <progress percent="{{item.progress}}" stroke-width="8"/>
+        <progress percent="{{item.progress}}" stroke-width="8" activeColor="{{item.isComplete?'#108EE9':'#E04343'}}"/>
       </view>
     </view>
 

@@ -174,7 +174,7 @@ canvas{
   font-weight: bold;
 }
 .table .tr.warn .td{
-  color: red;
+  color: #E04343;
 }
 .table .th, .table .td{
   width: 25%;

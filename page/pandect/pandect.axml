@@ -3,7 +3,7 @@
   <view class="header">
     <text>总览</text>
     <view class="h-date">
-      <the-date defaultDate="{{today}}" onSelected="onSelected" />
+      <the-date defaultDate="{{yesterday}}" onSelected="onSelected" />
       <view class="icon-down"></view>
     </view>
   </view>
