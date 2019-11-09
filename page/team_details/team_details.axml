@@ -1,0 +1,119 @@
+<view class="page">
+  <!-- 用户信息 -->
+  <view class="user">
+    <view a:if="{{userInfo.error}}" class="user-box error">
+      <view class="surname">{{userInfo.userSurname}}</view>
+      <view class="error">{{userInfo.errorMessage}}</view>
+    </view>
+    <view a:else class="user-box">
+      <view class="surname">{{userInfo.userSurname}}</view>
+      <view class="name">{{userInfo.userName}}</view>
+      <view class="info">
+        <image src="../../images/position.png" class="position" />
+        <view class="adress">{{userInfo.regionAddress}}</view>
+        <image
+          src="../../images/phone.png"
+          class="phone"
+          data-phone="{{userInfo.userPhone}}"
+          onTap="call"/>
+      </view>
+    </view>
+  </view>
+
+  <!-- 工作数据 -->
+  <the-loading loading="{{workData.loading}}" error="{{workData.error}}">
+    <view class="work-progress">
+      <view class="p-title">
+        <text>当月收缴情况</text>
+        <text>合计差额 {{workData.total}} 万</text>
+      </view>
+      <view class="p-header">
+        <text></text>
+        <text>全年已收</text>
+        <text>单项差额</text>
+      </view>
+      <view class="p-list">
+        <view class="item">
+          <view class="item-info">
+            <text>当年物业费</text>
+            <text>￥{{workData.houseNow.collectedYear}}万</text>
+            <text>￥{{workData.houseNow.lessNum}}万 ( {{workData.houseNow.difference}}% )</text>
+          </view>
+          <progress percent="{{workData.houseNow.percent}}" stroke-width="8" activeColor="{{workData.houseNow.isComplete?'#108EE9':'#E04343'}}"/>
+        </view>
+        <view class="item">
+          <view class="item-info">
+            <text>历欠物业费</text>
+            <text>￥{{workData.houseOwn.collectedYear}}万</text>
+            <text>￥{{workData.houseOwn.lessNum}}万 ( {{workData.houseOwn.difference}}% )</text>
+          </view>
+          <progress percent="{{workData.houseOwn.percent}}" stroke-width="8" activeColor="{{workData.houseOwn.isComplete?'#108EE9':'#E04343'}}"/>
+        </view>
+        <view class="item">
+          <view class="item-info">
+            <text>车位费</text>
+            <text>￥{{workData.parking.collectedYear}}万</text>
+            <text>￥{{workData.parking.lessNum}}万 ( {{workData.parking.difference}}% )</text>
+          </view>
+          <progress percent="{{workData.parking.percent}}" stroke-width="8" activeColor="{{workData.parking.isComplete?'#108EE9':'#E04343'}}"/>
+        </view>
+        <view class="item">
+          <view class="item-info">
+            <text>特约服务部</text>
+            <text>￥{{workData.specialParts.collectedYear}}万</text>
+            <text>￥{{workData.specialParts.lessNum}}万 ( {{workData.specialParts.difference}}% )</text>
+          </view>
+          <progress percent="{{workData.specialParts.percent}}" stroke-width="8" activeColor="{{workData.specialParts.isComplete?'#108EE9':'#E04343'}}"/>
+        </view>
+        <view class="item">
+          <view class="item-info">
+            <text>特约三小项</text>
+            <text>￥{{workData.specialThree.collectedYear}}万</text>
+            <text>￥{{workData.specialThree.lessNum}}万 ( {{workData.specialThree.difference}}% )</text>
+          </view>
+          <progress percent="{{workData.specialThree.percent}}" stroke-width="8" activeColor="{{workData.specialThree.isComplete?'#108EE9':'#E04343'}}"/>
+        </view>
+      </view>
+    </view>
+  </the-loading>
+
+  <!-- 图表 -->
+  <view class="tab">
+    <view
+      a:for="{{feeType}}"
+      class="tab-item {{currentTab==item.tabIndex?'active':''}}"
+      data-index="{{item.tabIndex}}"
+      data-item="{{item}}"
+      onTap="tabSwitch">{{item.name}}
+    </view>
+  </view>
+  <the-loading loading="{{line.loading}}" error="{{line.error}}">
+    <view class="line-chart">
+      <view class="chart-title">年度收入对比</view>
+      <view class="chart-item">
+        <canvas
+          id="line"
+          onTouchStart="touchStart"
+          onTouchMove="touchMove"
+          onTouchEnd="touchEnd"
+          width="{{width}}"
+          height="{{height}}">
+        </canvas>
+      </view>
+      <view class="chart-footer">
+        <view class="item">
+          <text>当期收缴率</text>
+          <text>{{line.nowPercent}}%</text>
+        </view>
+        <view class="item">
+          <text>去年同期收缴率</text>
+          <text>{{line.lastYearPercent}}%</text>
+        </view>
+        <view class="item">
+          <text>较上期增长</text>
+          <text>{{line.increast}}%</text>
+        </view>
+      </view>
+    </view>
+  </the-loading>
+</view>

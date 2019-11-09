@@ -1,0 +1,31 @@
+<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 80 80" 
+  preserveAspectRatio="xMidYMid meet">
+  <circle
+    cx="40"
+    cy="40"
+    r="36.5"
+    stroke="#707070"
+    stroke-width="7"
+    fill="none"
+    stroke-dashoffset="0"
+    stroke-dasharray="200">
+    <animate
+      attributeType="XML"
+      attributeName="stroke-dashoffset"
+      values="0;170;0"
+      dur="2"
+      begin="0"
+      repeatCount="indefinite">
+    </animate>
+    <animateTransform
+      attributeType="XML"
+      attributeName="transform"
+      begin="0s"
+      dur="1s"
+      type="rotate"
+      values="0 40 40;360 40 40"
+      repeatCount="indefinite">
+    </animateTransform>
+  </circle>
+</svg>

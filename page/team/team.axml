@@ -1,0 +1,35 @@
+<view class="page">
+  <!-- 团队表现 -->
+  <view class="header">
+    <text>团队表现</text>
+  </view>
+
+  <!-- list -->
+  <view class="list">
+    <view class="list-header">
+      <view class="list-name">项目排名</view>
+      <view class="list-option">
+        <the-feetype onSelected="onSelected"></the-feetype>
+        <view class="icon-down"></view>
+      </view>
+    </view>
+    
+    <the-loading loading="{{list.loading}}" error="{{list.error}}">
+      <view class="list-body">
+        <view class="list-item"
+          a:for="{{list.data}}"
+          onTap="openDetails"
+          data-params="{{ {id:item.id, sid:item.sid} }}">
+          <view class="item-name">{{item.name}}</view>
+          <view class="item-info">
+            <view class="item-adress">{{item.adress}}</view>
+            <view class="item-rate">
+              <text style="font-size:{{item.selectedSup=='%'?'25':'16'}}px">{{item.selectedProp}}</text>
+              <view>{{item.selectedSup}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </the-loading>
+  </view>
+</view>

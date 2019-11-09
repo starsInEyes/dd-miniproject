@@ -1,0 +1,40 @@
+.panel{
+  position: fixed;
+  z-index: 999;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: transparent;
+  transition: height 0.38s;
+}
+.panel .drawer{
+  position: absolute;
+  z-index: 1000;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  background-color: #fff;
+  box-shadow: 0 0 13px #ccc;
+}
+.panel.active{
+  height: 100%;
+}
+.panel .controls{
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+}
+.panel .controls view{
+  color: #3296FA;
+  padding: 15px 25px;
+  font-size: 16px;
+}
+
+.value{
+  padding-right:20px;
+  color: #3296FA;
+}

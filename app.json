@@ -1,7 +1,11 @@
 {
   "pages": [
-    "page/pandect/pandect",
+    "page/warn/warn",
     "page/daily/daily",
+    "page/team/team",
+    "page/pandect/pandect",
+    "page/warn_details/warn_details",
+    "page/team_details/team_details",
     "page/index/index"
   ],
   "window": {
@@ -28,6 +32,18 @@
         "name": "经营日报",
         "icon": "images/day_default.png",
         "activeIcon": "images/day_active.png"
+      },
+      {
+        "pagePath": "page/warn/warn",
+        "name": "智能预警",
+        "icon": "images/warn2_default.png",
+        "activeIcon": "images/warn2_active.png"
+      },
+      {
+        "pagePath": "page/team/team",
+        "name": "团队表现",
+        "icon": "images/team_default.png",
+        "activeIcon": "images/team_active.png"
       }
     ]
   },

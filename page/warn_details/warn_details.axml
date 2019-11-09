@@ -1,0 +1,22 @@
+<view>
+  <view class="d-title">{{list.note}}</view>
+  <view class="d-type">{{feeType}}</view>
+  <view class="d-list">
+  
+    <view class="item"
+      a:for="{{list.projects}}"
+      data-id="{{item.belongId}}"
+      data-sid="{{item.regionId}}"
+      onTap="openDetails">
+      <view class="item-name">{{item.belongName}}</view>
+      <view class="item-body">
+        <view class="item-v"><text>考核标准</text><text>{{item.taxNum}}%</text></view>
+        <view class="item-v"><text>收缴率</text><text>{{item.collectionRate}}%</text></view>
+        <view class="item-v"><text>差额</text><text>{{item.difference}}%</text></view>
+        <view class="item-v"><text>全年应收</text><text>{{(item.shouldYear/10000).toFixed(1)}}万</text></view>
+        <view class="item-v"><text>全年已收</text><text>{{(item.collectedYear/10000).toFixed(1)}}万</text></view>
+      </view>
+    </view>
+
+  </view>
+</view>

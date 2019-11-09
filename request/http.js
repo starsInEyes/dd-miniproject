@@ -6,9 +6,10 @@ switch(process.env.NODE_ENV){
   case 'production': domain = 'http://121.40.155.130/dingtalk';break;
 }
 
-
+let requestTime = 0;
 export function ddget(url, params){
   return new Promise((resolve, reject)=>{
+    let t0 = new Date().getTime();
     dd.httpRequest({
       url: domain + url,
       method: 'get',
@@ -20,10 +21,15 @@ export function ddget(url, params){
         'X-Requested-With': 'XMLHttpRequest'
       },
       success: function(res){
-        resolve(res);
+        let tx = new Date().getTime() - t0;
+        
+        if (requestTime) {
+          tx > requestTime? resolve(res) : setTimeout(()=>{ resolve(res) }, requestTime - tx)
+        } else resolve(res);
       },
       fail: function(res){
         console.log(res);
+        dd.alert({title:res.errorMessage});
         reject(res);
       }
     })

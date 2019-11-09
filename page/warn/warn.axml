@@ -1,0 +1,56 @@
+<view class="page">
+  <!-- 智能预警 -->
+  <view class="header">
+    <text>智能预警</text>
+  </view>
+  
+  <view class="tab">
+    <view
+      a:for="{{feeType}}"
+      class="tab-item {{currentTab==item.tabIndex?'active':''}}"
+      data-index="{{item.tabIndex}}"
+      data-item="{{item}}"
+      onTap="tabSwitch">{{item.name}}
+    </view>
+  </view>
+  <the-loading loading="{{line.loading}}" error="{{line.error}}">
+    <view class="up-to-standard">
+      <view class="uts-title">月达标项目数</view>
+      <canvas
+        id="line"
+        width="{{width}}"
+        height="{{height}}"
+        onTouchStart="touchStart"
+        onTouchMove="touchMove"
+        onTouchEnd="touchEnd">
+      </canvas>
+    </view>
+  </the-loading>
+
+  <the-loading loading="{{fox.loading}}" error="{{fox.error}}">
+    <view class="warn">
+      <view class="w-title">预警项目</view>
+        <view class="row">
+          <view class="col" data-field="notUpToStandard" onTap="openDetails">
+            <text>{{fox.notUpToStandard.projectNum}}</text>
+            <text>上月未达标</text>
+          </view>
+          <view class="col" data-field="noNewIncomeThreeDays" onTap="openDetails">
+            <text>{{fox.noNewIncomeThreeDays.projectNum}}</text>
+            <text>三天无新增收入</text>
+          </view>
+        </view>
+        <view class="row">
+          <view class="col" data-field="nutsKeepThreeMonths" onTap="openDetails">
+            <text>{{fox.nutsKeepThreeMonths.projectNum}}</text>
+            <text>连续三个月未达标</text>
+          </view>
+          <view class="col" data-field="lessNumGt10" onTap="openDetails">
+            <text>{{fox.lessNumGt10.projectNum}}</text>
+            <text>差额超过10%</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </the-loading>
+</view>

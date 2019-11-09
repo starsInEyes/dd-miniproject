@@ -1,0 +1,43 @@
+.d-title{
+  background-color: #fff;
+  font-size: 16px;
+  text-align: center;
+  padding: 10px 0;
+}
+.d-type{
+  padding: 20px 25px 5px;
+}
+
+.d-list{
+  padding: 0 10px;
+}
+.d-list .item{
+  background-color: #fff;
+  margin: 5px 0;
+  padding: 15px;
+  border-radius: 4px;
+}
+.item-name{
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+.item-body{
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  font-size: 12px;
+}
+.item-body .item-v{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.item-body .item-v text{
+  color: #666;
+  padding: 5px 0;
+}
+.item-body .item-v text + text{
+  color: #333;
+  font-weight: bold;
+}

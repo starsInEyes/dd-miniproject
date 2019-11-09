@@ -1,0 +1,37 @@
+.loading{
+  position: relative;
+}
+.loading .loading-body{
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.92);
+  opacity: 0;
+  transition: opacity 0.38s;
+  min-height: 30px;
+  max-height: 500px;
+}
+.loading .loading-body image{
+  opacity: 0;
+  width: 30px;
+  height: 30px;
+}
+.loading.trans .loading-body image{ transition: opacity 2s }
+
+.loading .loading-body text{ display: none }
+.loading .loading-body text.active{ display: block }
+
+.loading.active .loading-body{
+  display: flex;
+}
+.loading.opacity .loading-body{
+  opacity: 1;
+}
+.loading.image .loading-body image{
+  opacity: 1;
+}

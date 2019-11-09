@@ -1,0 +1,157 @@
+.page{
+  background-image: url('../../images/detailsbg.png');
+  background-size: 100% 120px;
+  background-position: center top;
+  background-repeat: no-repeat;
+  font-family: 'Microsoft YaHei';
+  background-color: #F7F7F7;
+}
+.user{
+  overflow: hidden;
+}
+.user-box{
+  width: 80%;
+  height: 120px;
+  background-color: #fff;
+  margin: 0 auto;
+  margin-top: 40px;
+  border-radius: 4px;
+  position: relative;
+  padding: 0;
+  border-top: 1px solid transparent;
+}
+.user-box .surname{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  background-color: #00B2FF;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%,-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+}
+.user-box .name{
+  margin-top: 30px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 2.5;
+}
+.user-box.error{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-box .info{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 25px;
+}
+.user-box .info .position, .user-box .info .phone{
+  width: 20px;
+  height: 20px;
+  margin: 0 10px;
+}
+
+.work-progress{
+  background-color: #fff;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+.work-progress .p-title{
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.work-progress .p-title text + text{
+  font-size: 12px;
+}
+.work-progress .p-header{
+  padding-left: 10px;
+  display: flex;
+  justify-content: flex-start;
+  /* font-weight: bold; */
+  margin-bottom: 5px;
+}
+.work-progress .p-header text:nth-child(1){ width:25%; }
+.work-progress .p-header text:nth-child(2){ width:35%;text-align:center; }
+.work-progress .p-header text:nth-child(3){ width:40%;text-align:right; }
+.work-progress .p-list{
+  padding-left: 10px;
+}
+.work-progress .p-list .item{
+  margin-bottom: 5px;
+}
+.work-progress .p-list .item .item-info{
+  line-height: 1.7;
+  display: flex;
+  justify-content: flex-start;
+}
+.work-progress .p-list .item .item-info text:nth-child(1){ width: 25%; text-align:left;}
+.work-progress .p-list .item .item-info text:nth-child(2){ width: 35%; text-align:center; }
+.work-progress .p-list .item .item-info text:nth-child(3){ width: 40%; text-align:right; }
+.work-progress .p-list .item .item-info text + text{
+  color: #666;
+}
+
+.tab{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+.tab .tab-item{
+  padding: 3px 0;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.tab .tab-item.active{
+  color: #108EE9;
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom-color: #108EE9;
+}
+.line-chart{
+  margin-top: 5px;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 15px;
+}
+.line-chart canvas{
+  width: 100%;
+}
+.line-chart .chart-title{
+  font-size: 14px;
+  font-weight: bold;
+}
+.line-chart .chart-footer{
+  display: flex;
+  justify-content: space-between;
+}
+.line-chart .chart-footer .item{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+.line-chart .chart-footer .item text{
+  padding: 5px 0;
+  color: #666;
+}
+.line-chart .chart-footer .item text + text{
+  color: #333;
+  font-weight: bold;
+}

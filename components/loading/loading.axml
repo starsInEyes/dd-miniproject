@@ -1,0 +1,7 @@
+<view class="loading {{is_active?'active':''}} {{is_opacity?'opacity':''}} {{is_image?'image':''}} {{is_trans?'trans':''}}">
+  <view class="loading-body" style="{{color?'background-color:'+color:''}}">
+    <image src="../../images/loading.svg" />
+    <text class="{{is_trans?'':'active'}}">{{error}}</text>
+  </view>
+  <slot />
+</view>

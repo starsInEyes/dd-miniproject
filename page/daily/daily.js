@@ -249,17 +249,26 @@ function drawChart4(canvas, width, height, data){
 
 Page({
   data: {
+    is_loading: false,
+    isShow: true,
     currentTab: 1,
     sortDirection: true,
     today,
     yesterday,
     selectedDate: yesterday,
   },
+  onShow(){
+    this.setData({ isShow: true })
+  },
+  onHide(){
+    this.setData({ isShow: false })
+  },
   onReady() {
     // 渲染第一页-物业费
     if (this.data.currentTab == 1) this.getPropertyData(this.data.selectedDate);
     else if (this.data.currentTab == 2) this.getParkingData(this.data.selectedDate);
     else if (this.data.currentTab == 3) this.getConventionData(this.data.selectedDate);
+    
   },
   getPropertyData(d){
     // params d 日期
@@ -335,20 +344,23 @@ Page({
     // params d 日期
     dd.showLoading();
 
-    let year = dateFormatter('yyyy', new Date(d));
-
     Promise.all([
-      getParkingToday({year}), // 环形图
-      getParkingProgress({year}), // 进度列表
-      getParkingLine({}), // 折线图
-    ]).then(([response1, response2, response3])=>{
+      getParkingToday({date: d}), // 环形图
+      getParkingProgress({date: d}), // 进度列表
+    ]).then(([response1, response2])=>{
       if (response1 && response1.data && response1.data.code == '0'){
         let temp = response1.data.result;
         let data = [
-          {name:'固定车位 ' + temp.fixed + ' 元', proportion: temp.fixed, a: '1'},
-          {name:'租赁车位 ' + temp.rent + ' 元', proportion: temp.rent, a: '1'},
-          {name:'临时车位 ' + temp.temporary + ' 元', proportion: temp.temporary, a: '1'},
+          {name:'固定车位 ' + temp.fixed + ' 元', proportion: temp.fixed},
+          {name:'租赁车位 ' + temp.rent + ' 元', proportion: temp.rent},
+          {name:'临时车位 ' + temp.temporary + ' 元', proportion: temp.temporary},
         ];
+        // 防止都为负数时，F2抛出错误
+        if (data[0].proportion<0 && data[1].proportion<0 && data[2].proportion<0){
+          data[0].proportion = 0 - data[0].proportion
+          data[1].proportion = 0 - data[1].proportion
+          data[2].proportion = 0 - data[2].proportion
+        }
         data.dateMarker = d;
         data.total = temp.totalMoneyIn;
         this.setData({
@@ -362,7 +374,7 @@ Page({
       }
 
       if (response2 && response2.data && response2.data.code == '0'){
-        let temp = response2.data.result;
+        let temp = response2.data.result; console.log(temp)
         for (let i = 0; i<temp.length; i++){
           if (temp[i].collectedYear - temp[i].lessNum == 0) temp[i].progress = 100;
           else {
@@ -375,6 +387,12 @@ Page({
         this.setData({'data2.list': temp});
       }
 
+      this.setData({'data2.dateMarker': d});
+      dd.hideLoading();
+    })
+
+    this.setData({is_loading: true})
+    getParkingLine({}).then(response3=>{
       if (response3 && response3.data && response3.data.code == '0'){
         let collToday = response3.data.result.collectedToday;
         let average = response3.data.result.average;
@@ -390,14 +408,11 @@ Page({
           data[i + collToday.length].date = date;
           data[i + collToday.length].type = '平均';
         }
-        this.setData({'data2.line': data}, ()=>{
-          this.drawChartMethod3(data);
+        this.setData({'data2.line': data, is_loading: false}, ()=>{
+          if (this.data.isShow && this.data.currentTab==2) this.drawChartMethod3(data);
         })
       }
-
-      this.setData({'data2.dateMarker': d});
-      dd.hideLoading();
-    })
+    }); // 折线图
   },
   getConventionData(d){
     dd.showLoading();
@@ -428,9 +443,9 @@ Page({
         this.setData({
           'data3.circle': data,
           'data3.tmy': {
-            t: temp.today,
-            m: temp.month,
-            y: temp.year,
+            t: (temp.today/10000).toFixed(1),
+            m: (temp.month/10000).toFixed(1),
+            y: (temp.year/10000).toFixed(1),
           }
         }, ()=>{ this.drawChartMethod4(data) });
       }
@@ -482,6 +497,7 @@ Page({
       .select('#area')
       .boundingClientRect()
       .exec((res) => {
+        if (!res[0]) return;
         // 获取分辨率
         const pixelRatio = dd.getSystemInfoSync().pixelRatio;
         // 获取画布实际宽高
@@ -507,6 +523,7 @@ Page({
     .select('#circle')
     .boundingClientRect()
     .exec(res => {
+      if (!res[0]) return;
       // 获取分辨率
       const pixelRatio = my.getSystemInfoSync().pixelRatio;
       // 获取画布实际宽高
@@ -530,6 +547,7 @@ Page({
     .select('#line')
     .boundingClientRect()
     .exec(res => {
+      if (!res[0]) return;
       // 获取分辨率
       const pixelRatio = my.getSystemInfoSync().pixelRatio;
       // 获取画布实际宽高
@@ -553,6 +571,7 @@ Page({
     .select('#circle2')
     .boundingClientRect()
     .exec(res => {
+      if (!res[0]) return;
       // 获取分辨率
       const pixelRatio = my.getSystemInfoSync().pixelRatio;
       // 获取画布实际宽高

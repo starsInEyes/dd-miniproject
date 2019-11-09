@@ -1,3 +1,4 @@
+// 日期格式化
 export function dateFormatter(fmt, date) { //author: meizz 
 	var o = {         
 		"M+" : date.getMonth()+1, //月份         
@@ -32,6 +33,7 @@ export function dateFormatter(fmt, date) { //author: meizz
 	return fmt; 
 }
 
+// 获取排序后的原索引列表
 export function getSort (arr){
   // arr = [5, 2, 512, 32, 44]
   // console.log(arr);
@@ -53,4 +55,25 @@ export function getSort (arr){
     tempArr[index] = new Date().getTime() + m;
   }
   return result;
+}
+
+// 请准求和
+export function preciseSum(arr){
+  if (Object.prototype.toString.call(arr)!=='[object Array]') return console.log(arr + ': not a Array');
+  if (arr.length === 0) return 0;
+  var maxFc = 0, value = [], i, Fl;
+  for (i = 0; i < arr.length; i++) {
+      if (!/^\-?\d+(\.\d+)?$/.test(arr[i] + '')) return console.log(arr[i] + ': not a Number');
+      Fl = (arr[i] + '').split('.')[1] || '';
+      maxFc = (Fl.length > maxFc)?Fl.length:maxFc;
+  }
+  for (i = 0; i < arr.length; i++) {
+      Fl = (arr[i] + '').split('.')[1] || '';
+      value.push((arr[i] + (Math.pow(10, (maxFc-Fl.length)) + '').substr(1)).replace('.', '') - 0);
+  }
+  let sum = 0;
+  for (i = 0; i<value.length; i++){
+    sum += value[i]
+  }
+  return sum/Math.pow(10, maxFc);
 }

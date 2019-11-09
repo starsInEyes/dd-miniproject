@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "the-feetype": "/components/feetype/feetype",
+    "the-loading": "/components/loading/loading"
+  }
+}
