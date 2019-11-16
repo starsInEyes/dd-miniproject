@@ -58,7 +58,7 @@ Page({
     let arr2 = [];
 
     list.forEach(item=>{
-      item.adress = item.adress || '暂无地址';
+      item.address = item.address || '暂无地址';
       item.selectedProp = item[prop];
       item.selectedSup = sup;
       arr.push(item[prop] || 0);

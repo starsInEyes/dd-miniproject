@@ -55,7 +55,7 @@
   box-sizing: border-box;
 }
 .con-top .ct-detail.active .ct-details{
-  height: 127px;
+  height: 150px;
 }
 .con-top .ct-detail .ct-details .table{
   margin: 0;
@@ -89,7 +89,7 @@
 
 
 canvas{
-  margin-left: 20px;
+  width: 100%;
 }
 .canvas-title{
   margin-top: 10px;

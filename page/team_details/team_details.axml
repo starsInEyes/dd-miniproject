@@ -7,15 +7,15 @@
     </view>
     <view a:else class="user-box">
       <view class="surname">{{userInfo.userSurname}}</view>
-      <view class="name">{{userInfo.userName}}</view>
+      <view class="name">{{userInfo.regionName}}-{{userInfo.userName}}</view>
       <view class="info">
-        <image src="../../images/position.png" class="position" />
-        <view class="adress">{{userInfo.regionAddress}}</view>
-        <image
-          src="../../images/phone.png"
-          class="phone"
-          data-phone="{{userInfo.userPhone}}"
-          onTap="call"/>
+        <view class="position" onTap="position" data-address="{{userInfo.regionAddress}}">
+          <image src="../../images/position.png"/>
+        </view>
+        <view class="address">{{userInfo.regionAddress}}</view>
+        <view class="phone" onTap="call" data-phone="{{userInfo.userPhone}}">
+          <image src="../../images/phone.png"/>
+        </view>
       </view>
     </view>
   </view>

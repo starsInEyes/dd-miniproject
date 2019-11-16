@@ -60,6 +60,9 @@ Page({
     this.getData();
     this.getData_line(this.data.feeType[0]);
   },
+  position(e){
+    let address = e.target.dataset.address;
+  },
   call(e){
     let phone = e.target.dataset.phone;
     if (phone){

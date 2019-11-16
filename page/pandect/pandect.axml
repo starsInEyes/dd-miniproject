@@ -9,149 +9,118 @@
   </view>
 
   <!-- 全年情况 -->
-  <view class="con-top">
-    <view class="ct-all">
-      <view>
-        <view>3.22<text>亿</text></view>
-        <view>全年目标</view>
+  <the-loading loading="{{total.loading}}" error="{{total.error}}" color="rgba(247, 247, 247, 0.92)">
+    <view class="con-top">
+      <view class="ct-all">
+        <view>
+          <view>{{total.shouldYear}}<text>亿</text></view>
+          <view>全年目标</view>
+        </view>
+        <view class="interval-line"></view>
+        <view class="con-top-center">
+          <view>{{total.collectedYear}}<text>亿</text></view>
+          <view>全年已收</view>
+        </view>
+        <view class="interval-line"></view>
+        <view>
+          <view>{{total.dueIn}}<text>亿</text></view>
+          <view>全年待收</view>
+        </view>
       </view>
-      <view class="interval-line"></view>
-      <view class="con-top-center">
-        <view>3.22<text>亿</text></view>
-        <view>全年已收</view>
-      </view>
-      <view class="interval-line"></view>
-      <view>
-        <view>3.22<text>亿</text></view>
-        <view>全年待收</view>
-      </view>
-    </view>
-    <view class="ct-detail {{isUpDetails?'active':''}}">
-      <view class="ct-control" onTap="switchDetails">
-        <text>详情</text>
-        <image src="../../images/upup.svg"/>
-      </view>
-      <view class="ct-details">
-        <view class="table" style="margin-top:5px">
-          <view class="thead">
-            <view class="tr">
-              <view class="th ft-col"></view>
-              <view class="th">全年应收</view>
-              <view class="th">全年已收</view>
-              <view class="th">全年待收</view>
+      <view class="ct-detail {{isUpDetails?'active':''}}">
+        <view class="ct-control" onTap="switchDetails">
+          <text>详情</text>
+          <image src="../../images/upup.svg"/>
+        </view>
+        <view class="ct-details">
+          <view class="table" style="margin-top:5px">
+            <view class="thead">
+              <view class="tr">
+                <view class="th ft-col"></view>
+                <view class="th">全年应收</view>
+                <view class="th">全年已收</view>
+                <view class="th">全年待收</view>
+              </view>
+            </view>
+            <view class="tbody">
+              <view class="tr">
+                <view class="td ft-col">当年物业费</view>
+                <view class="td">{{total.houseNow.shouldYear}}万</view>
+                <view class="td">{{total.houseNow.collectedYear}}万</view>
+                <view class="td">{{total.houseNow.dueIn}}万</view>
+              </view>
+              <view class="tr">
+                <view class="td ft-col">历年物业费</view>
+                <view class="td">{{total.houseLast.shouldYear}}万</view>
+                <view class="td">{{total.houseLast.collectedYear}}万</view>
+                <view class="td">{{total.houseLast.dueIn}}万</view>
+              </view>
             </view>
           </view>
-          <view class="tbody">
-            <view class="tr">
-              <view class="td ft-col">物业费</view>
-              <view class="td">34,888.0万</view>
-              <view class="td">34,888.0万</view>
-              <view class="td">34,888.0万</view>
+          <view class="table">
+            <view class="thead">
+              <view class="tr">
+                <view class="th ft-col"></view>
+                <view class="th">全年目标</view>
+                <view class="th">全年已收</view>
+                <view class="th">全年待收</view>
+              </view>
+            </view>
+            <view class="tbody">
+              <view class="tr">
+                <view class="td ft-col">综合车位费</view>
+                <view class="td">{{total.parking.shouldYear}}万</view>
+                <view class="td">{{total.parking.collectedYear}}万</view>
+                <view class="td">{{total.parking.dueIn}}万</view>
+              </view>
+              <view class="tr">
+                <view class="td ft-col">特约服务费</view>
+                <view class="td">{{total.special.shouldYear}}万</view>
+                <view class="td">{{total.special.collectedYear}}万</view>
+                <view class="td">{{total.special.dueIn}}万</view>
+              </view>
             </view>
           </view>
         </view>
-        <view class="table">
-          <view class="thead">
-            <view class="tr">
-              <view class="th ft-col"></view>
-              <view class="th">全年目标</view>
-              <view class="th">全年已收</view>
-              <view class="th">目标差额</view>
-            </view>
-          </view>
-          <view class="tbody">
-            <view class="tr">
-              <view class="td ft-col">车位费</view>
-              <view class="td">435.0万</view>
-              <view class="td">435.0万</view>
-              <view class="td">435.0万</view>
-            </view>
-            <view class="tr">
-              <view class="td ft-col">特约服务费</view>
-              <view class="td">435.0万</view>
-              <view class="td">435.0万</view>
-              <view class="td">435.0万</view>
-            </view>
-          </view>
-        </view>
       </view>
     </view>
-  </view>
 
-  <!-- 环形图——营收日报 -->
-  <view class="container">
-    <swiper
-      class="swiper"
-      indicator-dots="{{true}}"
-      indicator-color="#ddd"
-      duration="{{500}}"
-      autoplay="{{false}}"
-      interval="{{false}}">
-      <block a:for="{{swiper}}">
-        <swiper-item>
-          <view class="swiper-item" item-id="{{item.el}}">
-            <view>
-              <view class="canvas-title">营收数据 —— {{item.title}}</view>
-              <canvas
-                id="{{item.el}}"
-                onTouchStart="circle_touchStart"
-                onTouchMove="circle_touchMove"
-                onTouchEnd="circle_touchEnd"
-                width="{{width}}" height="{{height}}"/>
+    <!-- 环形图——营收日报 -->
+    <view class="container">
+      <swiper
+        class="swiper"
+        indicator-dots="{{true}}"
+        indicator-color="#ddd"
+        duration="{{500}}"
+        autoplay="{{false}}"
+        interval="{{false}}">
+        <block a:for="{{swiper}}">
+          <swiper-item>
+            <view class="swiper-item" item-id="{{item.el}}">
+              <view>
+                <view class="canvas-title">营收数据 —— {{item.title}}</view>
+                <canvas
+                  id="{{item.el}}"
+                  width="{{circle_width}}" height="{{circle_height}}"/>
+              </view>
             </view>
-          </view>
-        </swiper-item>
-      </block>
-    </swiper>
-  </view>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+  </the-loading>
+
 
   <!-- 折线图——日新增收入 -->
-  <view class="container">
-    <view class="canvas-title" onTap="titleClick">日新增收入</view>
-    <canvas
-      id="line1"
-      onTouchStart="touchStart"
-      onTouchMove="touchMove"
-      onTouchEnd="touchEnd"
-      width="{{width}}" height="{{height}}"/>
-  </view>
-
-  <!-- 列表——收缴排行 -->
-  <view>
-    <text class="canvas-title">收缴排行</text>
-    <view class="table">
-      <view class="thead">
-        <view class="tr">
-          <view class="th ft-col">项目</view>
-          <view class="th">目标</view>
-          <view class="th">收缴率</view>
-          <view class="th">差额</view>
-          <view class="th">去年同期</view>
-        </view>
-      </view>
-      <view class="tbody">
-        <view class="tr">
-          <view class="td ft-col">墨水湾</view>
-          <view class="td">78%</view>
-          <view class="td">75%</view>
-          <view class="td warn">-3%</view>
-          <view class="td">80%</view>
-        </view>
-        <view class="tr">
-          <view class="td ft-col">水岸国际</view>
-          <view class="td">58%</view>
-          <view class="td">57%</view>
-          <view class="td warn">-1%</view>
-          <view class="td warn">60%</view>
-        </view>
-        <view class="tr">
-          <view class="td ft-col">红桥城</view>
-          <view class="td">61%</view>
-          <view class="td">62%</view>
-          <view class="td">1%</view>
-          <view class="td warn">70%</view>
-        </view>
-      </view>
+  <the-loading loading="{{line.loading}}" error="{{line.error}}" color="rgba(247, 247, 247, 0.92)">
+    <view class="container">
+      <view class="canvas-title">日新增收入</view>
+      <canvas
+        id="line"
+        onTouchStart="touchStart"
+        onTouchMove="touchMove"
+        onTouchEnd="touchEnd"
+        width="{{line_width}}" height="{{line_height}}"/>
     </view>
-  </view>
+  </the-loading>
 </view>

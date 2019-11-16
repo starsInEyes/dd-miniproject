@@ -28,6 +28,7 @@
 
 .loading.active .loading-body{
   display: flex;
+  z-index: 999;
 }
 .loading.opacity .loading-body{
   opacity: 1;

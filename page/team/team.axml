@@ -22,7 +22,7 @@
           data-params="{{ {id:item.id, sid:item.sid} }}">
           <view class="item-name">{{item.name}}</view>
           <view class="item-info">
-            <view class="item-adress">{{item.adress}}</view>
+            <view class="item-address">{{item.address}}</view>
             <view class="item-rate">
               <text style="font-size:{{item.selectedSup=='%'?'25':'16'}}px">{{item.selectedProp}}</text>
               <view>{{item.selectedSup}}</view>

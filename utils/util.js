@@ -57,7 +57,7 @@ export function getSort (arr){
   return result;
 }
 
-// 请准求和
+// 精准求和
 export function preciseSum(arr){
   if (Object.prototype.toString.call(arr)!=='[object Array]') return console.log(arr + ': not a Array');
   if (arr.length === 0) return 0;

@@ -56,9 +56,19 @@
   padding: 0 25px;
 }
 .user-box .info .position, .user-box .info .phone{
+  padding: 10px;
+}
+.user-box .info .position image, .user-box .info .phone image{
   width: 20px;
   height: 20px;
-  margin: 0 10px;
+  min-width: 20px;
+  vertical-align: middle;
+}
+.user-box .info .address{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 .work-progress{

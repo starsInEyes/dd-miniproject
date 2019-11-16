@@ -2,6 +2,9 @@ import { ddget } from './http'
 
 // 测试
 export const testApi = p => ddget('/cfin/getWuYeCfin', p);
+// 总览
+export const getTotalDetails = p => ddget('/cfin/getTotalNums', p);
+export const getTotalLine = p => ddget('/cfin/queryDaygetDaybefore', p);
 // 物业费
 export const getMonthApi = p => ddget('/cfin/getShouldAndCollectedMonth', p);
 export const getShouldApi = p => ddget('/cfin/getShouldAndCollected', p);
@@ -19,6 +22,7 @@ export const getTeamList = p => ddget('/cfin/getTeamList', p);
 export const getWorkData = p => ddget('/cfin/getTeamDetail', p);
 export const getProjectLine = p => ddget('/cfin/getDetailCurve', p);
 export const getProjectUser = p => ddget('/sysUser/getUserInfo', p);
+
 // 智能预警
 export const getUpToStandard = p => ddget('/warning/queryComplianceProject', p);
 export const getNotUpToStandard = p => ddget('/warning/queryUnComplianceProLastMon', p);

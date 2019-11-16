@@ -1,21 +1,17 @@
 import F2 from '@antv/my-f2';
-import { dateFormatter } from '../../utils/util'
+import { dateFormatter, preciseSum } from '../../utils/util'
+import { getTotalDetails, getTotalLine } from '../../request/api'
 
-const app = getApp();
 const today = dateFormatter('yyyy-MM-dd', new Date());
 const yesterday = dateFormatter('yyyy-MM-dd', new Date(new Date().getTime() - 24*60*60*1000));
 
-function drawChart(canvas, width, height, data) {
+function drawChart(canvas, width, height, data, total) {
   let chart = new F2.Chart({
     el: canvas,
     width,
     height
   });
-  chart.source([
-    { name: '车场收费', proportion: 120000, a: '1' },
-    { name: '特约服务费', proportion: 32800, a: '1' },
-    { name: '物业服务费', proportion: 389000, a: '1' },
-  ]);
+  chart.source(data);
   chart.legend({
     position: 'left',
     marker: {
@@ -30,7 +26,7 @@ function drawChart(canvas, width, height, data) {
   chart.axis(false);
   chart.guide().text({
     position: ['50%', '50%'],
-    content: '总营收\n433000元'
+    content: `总营收\n${total}万`
   })
   chart.interval()
   .position('a*proportion')
@@ -38,10 +34,10 @@ function drawChart(canvas, width, height, data) {
     '#FCD647',
     '#E1DFE1',
     '#2962FB',
+    '#8325FB',
   ])
   .adjust('stack');
   chart.render();
-  return chart;
 }
 function drawChart2(canvas, width, height, data) {
 
@@ -51,54 +47,13 @@ function drawChart2(canvas, width, height, data) {
     height
   });
 
-  chart.source([
-    {"year":"1986","type":"收入","value":162},
-    {"year":"1986","type":"去年同期","value":42},
-    {"year":"1987","type":"收入","value":134},
-    {"year":"1987","type":"去年同期","value":54},
-    {"year":"1988","type":"收入","value":116},
-    {"year":"1988","type":"去年同期","value":26},
-    {"year":"1989","type":"收入","value":122},
-    {"year":"1989","type":"去年同期","value":32},
-    {"year":"1990","type":"收入","value":178},
-    {"year":"1990","type":"去年同期","value":68},
-    {"year":"1991","type":"收入","value":144},
-    {"year":"1991","type":"去年同期","value":54},
-    {"year":"1992","type":"收入","value":125},
-    {"year":"1992","type":"去年同期","value":35},
-    {"year":"1993","type":"收入","value":176},
-    {"year":"1993","type":"去年同期","value":66},
-    {"year":"1994","type":"收入","value":156},
-    {"year":"1994","type":"去年同期"},
-    {"year":"1995","type":"收入","value":195},
-    {"year":"1995","type":"去年同期"},
-    {"year":"1996","type":"收入","value":215},
-    {"year":"1996","type":"去年同期"},
-    {"year":"1997","type":"收入","value":176},
-    {"year":"1997","type":"去年同期","value":36},
-    {"year":"1998","type":"收入","value":167},
-    {"year":"1998","type":"去年同期","value":47},
-    {"year":"1999","type":"收入","value":142},
-    {"year":"1999","type":"去年同期"},
-    {"year":"2000","type":"收入","value":117},
-    {"year":"2000","type":"去年同期"},
-    {"year":"2001","type":"收入","value":113},
-    {"year":"2001","type":"去年同期","value":23},
-    {"year":"2002","type":"收入","value":132},
-    {"year":"2002","type":"去年同期"},
-    {"year":"2003","type":"收入","value":146},
-    {"year":"2003","type":"去年同期","value":46},
-    {"year":"2004","type":"收入","value":169},
-    {"year":"2004","type":"去年同期","value":59},
-    {"year":"2005","type":"收入","value":184},
-    {"year":"2005","type":"去年同期","value":44}
-  ]);
+  chart.source(data);
 
-  chart.scale('year', {
-    tickCount: 5,
+  chart.scale('date', {
+    tickCount: 4,
     range: [0, 1]
   });
-  chart.axis('year', {
+  chart.axis('date', {
     label: function label(text, index, total){
       var textCfg = {};
       if (index === 0){
@@ -109,37 +64,50 @@ function drawChart2(canvas, width, height, data) {
       return textCfg;
     }
   });
-  // chart.legend({
-  //   position:'top',
-  //   marker: {
-  //     symbol: 'square',
-  //     radius: 5
-  //   }
-  // });
   chart.legend(false);
   chart.tooltip({
+    position:'top',
     showCrosshairs: true,
-    showTitle: true,
-    // showTooltipMarker: true,
+    // showTitle: true,
+    showTooltipMarker: true,
     itemMarkerStyle: {
-      symbol: 'square'
+      symbol: 'square',
+      wordSpace: '0'
     },
-    offsetY: 30,
-    layout: 'vertical',
-    position:'top'
+    background: {
+      radius: 4,
+      fill: '#e2e2e2',
+      padding: [5.5, 5],
+    },
+    titleStyle:{ fill: '#333' },
+    nameStyle:{ fill: '#333' },
+    valueStyle:{ fill: '#333' },
+    showXTip: true,
+    xTip: {
+      fill: '#333'
+    },
+    xTipBackground: {
+      radius: 4,
+      fill: '#e2e2e2',
+      padding: [5.5, 5]
+    },
+    onShow: function onShow(ev) {
+      var items = ev.items;
+      items[0].value = items[0].value + ' 万'
+      items[1].value = items[1].value + ' 万'
+    }
   });
-  // chart.guide().rect({
-  //   start: ['50%', '-20%'],
-  //   end: ['100%', '0%'],
-  //   style:{
-  //     fillOpacity: 0.1,
-  //     fill: '#fa541c'
-  //   }
-  // })
-  chart.area().position('year*value').color('type').shape('smooth');
-  chart.line().position('year*value').color('type').shape('smooth');
+  chart.guide().text({
+    position: ['-6%', '-7%'],
+    content: '万',
+    style: {
+      fontSize: '12px',
+      fontWeight: 'bold'
+    }
+  })
+  chart.area().position('date*value').color('type').shape('smooth');
+  chart.line().position('date*value').color('type').shape('smooth');
   chart.render();
-  return chart;
 }
 
 Page({
@@ -147,36 +115,88 @@ Page({
     today,
     yesterday,
     isUpDetails: false,
-
+    total: {
+      loading: false,
+    },
+    line: {
+      loading: false,
+    },
     swiper: [
-      {el: 'area1', title: '当日', ind: 1},
-      {el: 'area2', title: '当月', ind: 2},
+      {el: 'area1', title: '今日', ind: 1},
+      {el: 'area2', title: '本月', ind: 2},
       {el: 'area3', title: '当年', ind: 3},
     ],
-    swiper2: [
-      {el: 'line1', title: '物业费'},
-      {el: 'line2', title: '车位费'},
-      {el: 'line3', title: '特约服务费'},
-    ]
   },
   onReady() {
-    let data1, data2, data3;
-    this.renderGraph('area1', data1, drawChart);
-    this.renderGraph('area2', data2, drawChart);
-    this.renderGraph('area3', data3, drawChart);
-    this.renderGraph('line1', data1, drawChart2);
+    this.getDataByDate(yesterday)
   },
-  onSelected(){
+  onSelected(date){
     // 日期选定回调
+    this.getDataByDate(date)
   },
   switchDetails(){
     // 详情展开和收起
     this.setData({ isUpDetails: !this.data.isUpDetails });
   },
-  titleClick(){
-    // 
+  getDataByDate(date){
+    // 全年数据 及 营收数据
+    this.setData({'total.loading': true})
+    getTotalDetails({date}).then(response=>{
+      if (response && response.data && response.data.code == 0){
+        let temp = response.data.result;
+        let keys = ['houseNow', 'houseLast', 'parking', 'special']
+        // 求三类总和 - 亿元
+        temp.collectedYear = this.toYi(preciseSum(keys.map(item=>temp[item].collectedYear)))
+        temp.shouldYear = this.toYi(preciseSum(keys.map(item=>temp[item].shouldYear)))
+        temp.dueIn = this.toYi(preciseSum(keys.map(item=>temp[item].dueIn)))
+        // 过滤单项的值 - 万元
+        keys.forEach(v => {
+          temp[v].collectedToday = this.toWy(temp[v].collectedToday)
+          temp[v].collectedMonth = this.toWy(temp[v].collectedMonth)
+          temp[v].collectedYear = this.toWy(temp[v].collectedYear)
+          temp[v].shouldYear = this.toWy(temp[v].shouldYear)
+          if (v == 'parking' || v == 'special') temp[v].dueIn = (temp[v].shouldYear-temp[v].collectedYear).toFixed(2)-0
+          else temp[v].dueIn = this.toWy(temp[v].dueIn)
+        })
+        this.setData({ total: temp })
+
+        let circle = {}
+        let arr = ['Today', 'Month', 'Year']
+        keys.forEach(v => {
+          let name;
+          switch (v) {
+            case 'houseNow': name = "当期物业费";break;
+            case 'houseLast': name = "历欠物业费";break;
+            case 'parking': name = "综合车位费";break;
+            case 'special': name = "特约服务费";break;
+          }
+          arr.forEach(k => {
+            let val = temp[v]['collected'+ k];
+            !circle[k] && (circle[k] = [])
+            circle[k].push({name: `${name}${val}万`, proportion: val})
+          })
+        })
+        this.renderGraph('area1', drawChart, circle.Today, preciseSum(circle.Today.map(item=>item.proportion)));
+        this.renderGraph('area2', drawChart, circle.Month, preciseSum(circle.Month.map(item=>item.proportion)));
+        this.renderGraph('area3', drawChart, circle.Year, preciseSum(circle.Year.map(item=>item.proportion)));
+      } else this.setData({'total.loading': false, 'total.error': '没有数据'})
+    })
+    // 日新增收入
+    this.setData({'line.loading': true})
+    getTotalLine({beforeDay: 15, date}).then(response=>{
+      if (response && response.data && response.data.code == 0){
+        let temp = response.data.result;
+        let arr = [];
+        temp.forEach(item => {
+          arr.push({ date: item.date, type: '收入', value: this.toWy(item.dayGet)});
+          arr.push({ date: item.date, type: '去年同期', value: this.toWy(item.dayGetLastYear)});
+        })
+        this.setData({'line.loading': false})
+        this.renderGraph('line', drawChart2, arr);
+      } this.setData({'line.loading': false, 'error': '没有数据'})
+    })
   },
-  renderGraph(el, data, method){
+  renderGraph(el, method, data, total){
     // 渲染圆形图
     // -- params --
     // el canvas元素id
@@ -189,22 +209,26 @@ Page({
         const pixelRatio = dd.getSystemInfoSync().pixelRatio
         const canvasWidth = res[0].width;
         const canvasHeight = res[0].height;
+        
+        let prefix = el.includes('area')?'circle':'line';
         this.setData({
-          width: canvasWidth * pixelRatio,
-          height: canvasHeight * pixelRatio
+          [prefix +'_width']: canvasWidth * pixelRatio,
+          [prefix +'_height']: canvasHeight * pixelRatio
         }, ()=>{
           const ddCtx = dd.createCanvasContext(el);
-          ddCtx.scale(pixelRatio, pixelRatio);
+          if (!this[el]) ddCtx.scale(pixelRatio, pixelRatio);
           const canvas = new F2.Renderer(ddCtx);
           this[el] = canvas
-          method(canvas, res[0].width, res[0].height, data);
+          method(canvas, res[0].width, res[0].height, data, total);
         })
       });
   },
-
-
-
-
+  toWy(input){
+    return ((input || 0)/10000).toFixed(2) - 0
+  },
+  toYi(input){
+    return ((input || 0)/Math.pow(10, 8)).toFixed(2) - 0
+  },
   touchStart(e) {
     if (this[e.currentTarget.id]) this[e.currentTarget.id].emitEvent('touchstart', [e]);
   },
